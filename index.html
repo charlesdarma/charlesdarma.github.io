@@ -1,29 +1,367 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Charles Darma | Portfolio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charles Kenrick Darma | Portfolio</title>
+    
+    <!-- Google Fonts for a sleek look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #f4f4f4; }
-        .container { background: white; width: 400px; margin: 0 auto; padding: 40px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        img { width: 150px; border-radius: 50%; }
-        h1 { margin-bottom: 10px; }
-        p { color: #666; }
-        .btn { display: inline-block; padding: 10px 20px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+        :root {
+            --bg-color: #050505;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --accent: #00d2ff; /* Cyan Blue */
+            --accent-2: #9254de; /* Purple */
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- Background Animation --- */
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 50% 50%, rgba(0, 210, 255, 0.1), transparent 60%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* --- Navigation --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 10%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            margin-left: 30px;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            line-height: 1.1;
+            background: linear-gradient(to right, #fff, var(--text-dim));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .typing-container {
+            font-size: 1.5rem;
+            color: var(--accent);
+            height: 30px;
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            background: linear-gradient(45deg, var(--accent), var(--accent-2));
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+        }
+
+        /* --- Sections General --- */
+        section {
+            padding: 100px 10%;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        h2 span {
+            color: var(--accent);
+        }
+
+        /* --- Grid Layouts --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .card p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        /* --- About Section --- */
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            flex-wrap: wrap;
+        }
+        
+        .about-text {
+            flex: 1;
+        }
+
+        /* --- Scroll Animation Classes --- */
+        .hidden {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease;
+        }
+
+        .show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 50px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .nav-links { display: none; } /* Simplified for mobile */
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Replace this image link with your own photo later -->
-        <img src="https://via.placeholder.com/150" alt="Profile Photo">
+    <!-- Background Glow Effect -->
+    <div class="bg-glow"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">CKD.</div>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#interests">Interests</a>
+            <a href="#roblox">Projects</a>
+            <a href="mailto:your-email@gmail.com" style="color:var(--accent)">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hidden">
+            <h1>Charles Kenrick Darma</h1>
+            <div class="typing-container">
+                I am <span id="typing-text"></span><span class="cursor">|</span>
+            </div>
+            <a href="#interests" class="btn">View My World</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="hidden">
+            <h2>About <span>Me</span></h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p style="font-size: 1.1rem; margin-bottom: 20px;">
+                        Hello! I'm a 15-year-old creative developer and editor based in <strong>Indonesia</strong>.
+                    </p>
+                    <p style="color: var(--text-dim);">
+                        I don't just consume content; I create it. Whether I'm calculating the next move in Chess, editing a cinematic sequence, or scripting a new game engine in Roblox, I am always building something new.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interests Grid -->
+    <section id="interests">
+        <div class="hidden">
+            <h2>What I <span>Do</span></h2>
+            <div class="grid">
+                <!-- Card 1 -->
+                <div class="card">
+                    <span class="card-icon">🎬</span>
+                    <h3>Video Editing</h3>
+                    <p>Crafting stories through cuts, rhythm, and flow. Experienced in Premiere Pro & After Effects.</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="card">
+                    <span class="card-icon">🎥</span>
+                    <h3>Cinematography</h3>
+                    <p>Capturing the perfect shot. Understanding lighting, composition, and visual storytelling.</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="card">
+                    <span class="card-icon">💻</span>
+                    <h3>Coding</h3>
+                    <p>Building the web and software. HTML, CSS, Lua, and exploring Python.</p>
+                </div>
+                <!-- Card 4 -->
+                <div class="card">
+                    <span class="card-icon">♟️</span>
+                    <h3>Chess</h3>
+                    <p>Strategy and foresight. Always looking 5 moves ahead.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roblox / Game Dev Section -->
+    <section id="roblox">
+        <div class="hidden">
+            <h2>Roblox <span>Dev</span></h2>
+            <div class="card" style="text-align: center; max-width: 800px; margin: 0 auto; background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,210,255,0.05));">
+                <span class="card-icon">🎮</span>
+                <h3>Game Development</h3>
+                <p style="margin-bottom: 20px;">
+                    I use Luau scripting to build immersive experiences on Roblox. From UI design to backend logic, I create full game loops.
+                </p>
+                <a href="#" class="btn" style="background: transparent; border: 1px solid var(--accent);">See My Games</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 Charles Kenrick Darma. Made with code.</p>
+    </footer>
+
+    <!-- JavaScript for Animations -->
+    <script>
+        // 1. Typing Animation
+        const textElement = document.getElementById('typing-text');
+        const roles = ["a Video Editor.", "a Coder.", "a Chess Player.", "a Roblox Developer."];
+        let roleIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+
+        function type() {
+            const currentRole = roles[roleIndex];
+            
+            if (isDeleting) {
+                textElement.textContent = currentRole.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                textElement.textContent = currentRole.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            let typeSpeed = isDeleting ? 50 : 100;
+
+            if (!isDeleting && charIndex === currentRole.length) {
+                typeSpeed = 2000; // Pause at end
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                roleIndex = (roleIndex + 1) % roles.length;
+                typeSpeed = 500; // Pause before new word
+            }
+
+            setTimeout(type, typeSpeed);
+        }
         
-        <h1>Charles Darma</h1>
-        <p>Creative Professional & Portfolio</p>
-        
-        <p>I help brands build their identity. <br>Based in Indonesia.</p>
-        
-        <a href="mailto:your-email@gmail.com" class="btn">Contact Me</a>
-    </div>
+        // Start typing loop
+        document.addEventListener('DOMContentLoaded', type);
+
+        // 2. Scroll Reveal Animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                }
+            });
+        });
+
+        const hiddenElements = document.querySelectorAll('.hidden');
+        hiddenElements.forEach((el) => observer.observe(el));
+    </script>
 
 </body>
 </html>
