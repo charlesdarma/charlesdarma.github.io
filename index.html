@@ -5,40 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Charles Kenrick Darma | Motion & Code</title>
     
+    <!-- DYNAMIC FAVICON (No file upload needed) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%2300ff9d%22/><text y=%22.9em%22 x=%22.2em%22 font-family=%22monospace%22 font-weight=%22bold%22 font-size=%2280%22 fill=%22%23000%22>C</text></svg>">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        /* --- VARIABLES & THEME CONFIG --- */
+        /* --- VARIABLES --- */
         :root {
-            /* Dark Mode (Default) */
+            /* Dark Mode */
             --bg-color: #050505;
             --text-main: #ffffff;
             --text-dim: #888888;
             --card-bg: rgba(255, 255, 255, 0.03);
             --card-border: rgba(255, 255, 255, 0.1);
-            --accent: #00ff9d; /* Cyber Green */
-            --accent-glow: rgba(0, 255, 157, 0.4);
+            --accent: #00ff9d; /* Cyan Green */
             --node-color: rgba(255, 255, 255, 0.15);
             --line-color: rgba(255, 255, 255, 0.05);
         }
 
-        /* Light Mode Overrides */
         body.light-mode {
+            /* Light Mode */
             --bg-color: #e0e0e0;
             --text-main: #111111;
             --text-dim: #555555;
             --card-bg: rgba(255, 255, 255, 0.6);
             --card-border: rgba(0, 0, 0, 0.05);
             --accent: #2962ff; /* Royal Blue */
-            --accent-glow: rgba(41, 98, 255, 0.3);
             --node-color: rgba(0, 0, 0, 0.1);
             --line-color: rgba(0, 0, 0, 0.05);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; /* Custom cursor container */ }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
         
         body {
             font-family: 'Space Grotesk', sans-serif;
@@ -48,7 +49,16 @@
             transition: background-color 0.5s ease, color 0.5s ease;
         }
 
-        /* --- CUSTOM CURSOR --- */
+        /* --- UI ELEMENTS --- */
+        
+        /* Scroll Progress Bar */
+        #scroll-progress {
+            position: fixed; top: 0; left: 0; height: 3px; background: var(--accent);
+            width: 0%; z-index: 99999; box-shadow: 0 0 10px var(--accent);
+            transition: width 0.1s;
+        }
+
+        /* Custom Cursor */
         #cursor {
             width: 20px; height: 20px;
             border: 2px solid var(--accent);
@@ -59,209 +69,179 @@
             mix-blend-mode: difference;
         }
         #cursor.hovered { width: 50px; height: 50px; background-color: var(--accent); opacity: 0.5; border: none; }
+        #cursor.click { transform: translate(-50%, -50%) scale(0.8); }
 
-        /* --- BACKGROUND CANVAS (NODES) --- */
-        #bg-canvas {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-        }
+        /* Background Canvas */
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
 
-        /* --- NAVIGATION & TOGGLE --- */
+        /* Navigation */
         nav {
             display: flex; justify-content: space-between; align-items: center;
             padding: 30px 5%; position: fixed; width: 100%; top: 0; z-index: 100;
             mix-blend-mode: difference;
         }
-
+        
         .logo { font-weight: 700; font-size: 1.5rem; letter-spacing: -1px; }
 
-        /* Toggle Switch */
+        .magnetic-wrap { display: inline-block; padding: 20px; /* larger hit area */ }
+        .magnetic-area { display: inline-block; transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+
         .theme-switch {
             background: none; border: 2px solid var(--text-main);
             color: var(--text-main); padding: 5px 15px; border-radius: 20px;
             font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
-            cursor: pointer; transition: 0.3s;
+            cursor: none; pointer-events: auto;
         }
-        .theme-switch:hover { background: var(--text-main); color: var(--bg-color); }
 
-        /* --- HERO SECTION --- */
+        /* Hero */
         .hero {
             height: 100vh; display: flex; flex-direction: column;
             justify-content: center; align-items: flex-start; padding: 0 10%;
-            position: relative;
+            position: relative; perspective: 1000px;
         }
+        
+        .hero-label { font-family: 'JetBrains Mono', monospace; color: var(--accent); margin-bottom: 20px; }
 
-        .hero-label {
-            font-family: 'JetBrains Mono', monospace; color: var(--accent);
-            margin-bottom: 20px; font-size: 1rem;
-        }
-
-        /* Glitch Effect Text */
-        .glitch-wrapper { position: relative; display: inline-block; }
+        /* Parallax Title */
         .hero h1 {
             font-size: 5vw; line-height: 0.9; font-weight: 700;
             text-transform: uppercase; letter-spacing: -2px;
-            position: relative;
+            will-change: transform; /* optimized for movement */
         }
         
+        /* Glitch Effect */
+        .glitch-wrapper { position: relative; }
         .hero h1::before, .hero h1::after {
             content: attr(data-text); position: absolute; top: 0; left: 0;
             width: 100%; height: 100%; opacity: 0;
         }
-        
         .hero h1:hover::before {
             opacity: 1; color: var(--accent); z-index: -1;
-            animation: glitch-anim-1 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+            animation: glitch-1 0.4s infinite;
         }
         .hero h1:hover::after {
             opacity: 1; color: #ff00ff; z-index: -2;
-            animation: glitch-anim-2 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+            animation: glitch-2 0.4s infinite;
         }
 
-        @keyframes glitch-anim-1 {
-            0% { transform: translate(0); }
-            20% { transform: translate(-3px, 3px); }
-            40% { transform: translate(-3px, -3px); }
-            60% { transform: translate(3px, 3px); }
-            80% { transform: translate(3px, -3px); }
-            100% { transform: translate(0); }
-        }
-        @keyframes glitch-anim-2 {
-            0% { transform: translate(0); }
-            20% { transform: translate(3px, -3px); }
-            40% { transform: translate(3px, 3px); }
-            60% { transform: translate(-3px, -3px); }
-            80% { transform: translate(-3px, 3px); }
-            100% { transform: translate(0); }
-        }
+        @keyframes glitch-1 { 0% { transform: translate(0); } 20% { transform: translate(-3px, 3px); } 100% { transform: translate(0); } }
+        @keyframes glitch-2 { 0% { transform: translate(0); } 20% { transform: translate(3px, -3px); } 100% { transform: translate(0); } }
 
-        .tagline { margin-top: 30px; font-size: 1.2rem; color: var(--text-dim); max-width: 500px; }
-
-        /* --- 3D CARDS SECTION --- */
+        /* Grid & Cards */
         section { padding: 100px 10%; }
-        .section-header { font-size: 2rem; margin-bottom: 50px; display: flex; align-items: center; gap: 20px; }
-        .section-header::after { content: ''; height: 1px; flex: 1; background: var(--text-dim); opacity: 0.3; }
-
-        .grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px; perspective: 1000px;
-        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; perspective: 1000px; }
 
         .tilt-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            padding: 40px; border-radius: 20px;
-            backdrop-filter: blur(10px);
-            transform-style: preserve-3d;
-            transition: transform 0.1s; /* Smoothness controlled by JS */
+            background: var(--card-bg); border: 1px solid var(--card-border);
+            padding: 40px; border-radius: 20px; backdrop-filter: blur(10px);
+            transform-style: preserve-3d; transition: transform 0.1s;
+            position: relative; overflow: hidden;
         }
-        
+
+        /* Shiny hover effect */
+        .tilt-card::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            opacity: 0; transform: translate(-50%, -50%); pointer-events: none; transition: opacity 0.3s;
+        }
+        .tilt-card:hover::after { opacity: 1; }
+
         .tilt-card-content { transform: translateZ(30px); }
         .card-icon { font-size: 3rem; margin-bottom: 20px; display: block; }
-        .tilt-card h3 { font-size: 1.5rem; margin-bottom: 15px; }
-        .tilt-card p { color: var(--text-dim); line-height: 1.6; }
-        
+        .tilt-card h3 { font-size: 1.5rem; margin-bottom: 10px; }
         .software-tag {
             display: inline-block; margin-top: 20px; padding: 5px 10px;
             border: 1px solid var(--accent); color: var(--accent);
             font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; border-radius: 4px;
         }
 
-        /* --- BOOT OVERLAY --- */
+        /* Boot Screen */
         #boot-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; color: #00ff9d; z-index: 10000;
             display: flex; align-items: center; justify-content: center;
-            font-family: 'JetBrains Mono', monospace;
-            transition: opacity 0.5s;
+            font-family: 'JetBrains Mono', monospace; transition: opacity 0.5s;
         }
 
-        /* Mobile */
         @media (max-width: 768px) {
             .hero h1 { font-size: 3rem; }
-            .grid { grid-template-columns: 1fr; }
-            * { cursor: auto; } /* Disable custom cursor on touch */
-            #cursor { display: none; }
+            * { cursor: auto; } #cursor { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- CUSTOM CURSOR -->
+    <div id="scroll-progress"></div>
     <div id="cursor"></div>
-
-    <!-- BOOT SCREEN -->
-    <div id="boot-screen">
-        <div>> INITIALIZING CREATIVE ENGINE...</div>
-    </div>
-
-    <!-- CANVAS BACKGROUND -->
+    <div id="boot-screen"><div>> INITIALIZING SYSTEM...</div></div>
     <canvas id="bg-canvas"></canvas>
 
-    <!-- NAV -->
     <nav>
-        <div class="logo">CKD.</div>
-        <button class="theme-switch" id="theme-toggle">LIGHT MODE</button>
+        <div class="magnetic-wrap"><div class="magnetic-area logo">CKD.</div></div>
+        <div class="magnetic-wrap">
+            <button class="magnetic-area theme-switch" id="theme-toggle">LIGHT MODE</button>
+        </div>
     </nav>
 
-    <!-- HERO -->
     <section class="hero">
         <div class="hero-label">PORTFOLIO v2026</div>
         <div class="glitch-wrapper">
-            <h1 data-text="CHARLES KENRICK">CHARLES KENRICK</h1>
-            <h1 data-text="DARMA">DARMA</h1>
+            <h1 id="parallax-title" data-text="CHARLES KENRICK">CHARLES KENRICK</h1>
+            <h1 id="parallax-title-2" data-text="DARMA">DARMA</h1>
         </div>
-        <p class="tagline">
-            Motion Graphics. DaVinci Resolve Editor. Full Stack Developer.
-            <br>Based in Indonesia.
+        <p style="margin-top: 30px; font-size: 1.2rem; color: var(--text-dim); max-width: 500px;">
+            Motion Graphics. DaVinci Resolve. Full Stack Code.
         </p>
     </section>
 
-    <!-- WORK / INTERESTS -->
     <section>
-        <h2 class="section-header">Creative Stack</h2>
+        <div style="font-size: 2rem; margin-bottom: 50px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px;">
+            Work & Skills
+        </div>
         <div class="grid">
-            
-            <!-- Card 1: Editing -->
             <div class="tilt-card" data-tilt>
                 <div class="tilt-card-content">
                     <span class="card-icon">🎬</span>
                     <h3>Motion & Edit</h3>
-                    <p>Specialized in node-based compositing. I handle complex workflows from color grading to VFX integration.</p>
+                    <p>Node-based compositing, VFX, and color grading for cinematic visuals.</p>
                     <span class="software-tag">DaVinci Resolve / Fusion</span>
                 </div>
             </div>
-
-            <!-- Card 2: Code -->
             <div class="tilt-card" data-tilt>
                 <div class="tilt-card-content">
                     <span class="card-icon">⚡</span>
                     <h3>Creative Coding</h3>
-                    <p>Bridging the gap between visual art and logic. Building websites and interactive experiences.</p>
+                    <p>Building interactive web experiences and robust software logic.</p>
                     <span class="software-tag">HTML / CSS / JS</span>
                 </div>
             </div>
-
-            <!-- Card 3: Roblox -->
             <div class="tilt-card" data-tilt>
                 <div class="tilt-card-content">
                     <span class="card-icon">🎮</span>
-                    <h3>Game Architecture</h3>
-                    <p>Developing game mechanics and optimized loops. Bringing ideas to life in the Roblox Metaverse.</p>
-                    <span class="software-tag">Roblox Studio / Luau</span>
+                    <h3>Roblox Architecture</h3>
+                    <p>Advanced Luau scripting for immersive game loops and mechanics.</p>
+                    <span class="software-tag">Roblox Studio</span>
                 </div>
             </div>
-
-            <!-- Card 4: Chess -->
             <div class="tilt-card" data-tilt>
                 <div class="tilt-card-content">
                     <span class="card-icon">♟️</span>
                     <h3>Strategy</h3>
-                    <p>Applying the foresight of Chess to creative problem solving. Always thinking 5 moves ahead.</p>
-                    <span class="software-tag">ELO: Rising</span>
+                    <p>Tactical foresight and pattern recognition.</p>
+                    <span class="software-tag">Chess</span>
                 </div>
             </div>
+        </div>
+    </section>
 
+    <section style="text-align: center; margin-top: 50px;">
+        <h2>Ready to collaborate?</h2>
+        <br>
+        <div class="magnetic-wrap">
+            <!-- CHANGE THIS EMAIL TO YOUR REAL ONE -->
+            <a href="mailto:contact@charlesdarma.my.id" class="magnetic-area" style="text-decoration: none; font-size: 2rem; color: var(--accent); border: 1px solid var(--accent); padding: 20px 40px; border-radius: 50px; display: inline-block;">
+                Get In Touch
+            </a>
         </div>
     </section>
 
@@ -271,56 +251,82 @@
         </div>
     </footer>
 
-    <!-- LOGIC -->
     <script>
-        // 1. BOOT SCREEN
+        // --- 1. BOOT & SCROLL PROGRESS ---
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const boot = document.getElementById('boot-screen');
                 boot.style.opacity = '0';
                 setTimeout(() => boot.remove(), 500);
-            }, 1500);
+            }, 1000);
         });
 
-        // 2. THEME TOGGLE
-        const toggleBtn = document.getElementById('theme-toggle');
-        toggleBtn.addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            if (document.body.classList.contains('light-mode')) {
-                toggleBtn.innerText = "DARK MODE";
-            } else {
-                toggleBtn.innerText = "LIGHT MODE";
-            }
+        window.addEventListener('scroll', () => {
+            const scrollTotal = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollCurrent = window.scrollY;
+            const percentage = (scrollCurrent / scrollTotal) * 100;
+            document.getElementById('scroll-progress').style.width = percentage + "%";
         });
 
-        // 3. CUSTOM CURSOR
+        // --- 2. CURSOR & INTERACTION ---
         const cursor = document.getElementById('cursor');
+        
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
+            
+            // Parallax Title Effect
+            const moveX = (e.clientX - window.innerWidth / 2) * 0.02;
+            const moveY = (e.clientY - window.innerHeight / 2) * 0.02;
+            
+            const title1 = document.getElementById('parallax-title');
+            const title2 = document.getElementById('parallax-title-2');
+            
+            if(title1) title1.style.transform = `translate(${moveX * -1}px, ${moveY * -1}px)`;
+            if(title2) title2.style.transform = `translate(${moveX}px, ${moveY}px)`;
         });
 
-        document.querySelectorAll('a, button, .tilt-card').forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+        document.addEventListener('mousedown', () => cursor.classList.add('click'));
+        document.addEventListener('mouseup', () => cursor.classList.remove('click'));
+
+        // --- 3. MAGNETIC BUTTONS ---
+        const magnets = document.querySelectorAll('.magnetic-wrap');
+        magnets.forEach(wrap => {
+            const area = wrap.querySelector('.magnetic-area');
+            
+            wrap.addEventListener('mousemove', (e) => {
+                const rect = wrap.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                area.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+                cursor.classList.add('hovered');
+            });
+
+            wrap.addEventListener('mouseleave', () => {
+                area.style.transform = 'translate(0px, 0px)';
+                cursor.classList.remove('hovered');
+            });
         });
 
-        // 4. 3D TILT EFFECT (Vanilla JS Implementation)
-        const cards = document.querySelectorAll('.tilt-card');
-        
-        cards.forEach(card => {
+        // --- 4. 3D TILT CARDS ---
+        document.querySelectorAll('.tilt-card').forEach(card => {
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
                 
+                // Tilt Calculation
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
-                
-                const rotateX = ((y - centerY) / centerY) * -10; // Max rotation deg
+                const rotateX = ((y - centerY) / centerY) * -10;
                 const rotateY = ((x - centerX) / centerX) * 10;
-
+                
                 card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+                // Shiny Effect Position
+                const after = window.getComputedStyle(card, '::after');
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
             });
 
             card.addEventListener('mouseleave', () => {
@@ -328,11 +334,17 @@
             });
         });
 
-        // 5. CANVAS BACKGROUND (FUSION NODES EFFECT)
+        // --- 5. THEME TOGGLE ---
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+        });
+
+        // --- 6. ADVANCED CANVAS BACKGROUND ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
         let particles = [];
+        let mouse = { x: null, y: null };
 
         function resize() {
             width = canvas.width = window.innerWidth;
@@ -341,22 +353,47 @@
         window.addEventListener('resize', resize);
         resize();
 
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        // Click to explode
+        window.addEventListener('mousedown', () => {
+            particles.forEach(p => {
+                const dx = p.x - mouse.x;
+                const dy = p.y - mouse.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 300) {
+                    p.vx = (dx / dist) * 20;
+                    p.vy = (dy / dist) * 20;
+                }
+            });
+        });
+
         class Particle {
             constructor() {
                 this.x = Math.random() * width;
                 this.y = Math.random() * height;
-                this.vx = (Math.random() - 0.5) * 0.5;
-                this.vy = (Math.random() - 0.5) * 0.5;
+                this.vx = (Math.random() - 0.5) * 1;
+                this.vy = (Math.random() - 0.5) * 1;
                 this.size = Math.random() * 2 + 1;
+                this.baseX = this.x; this.baseY = this.y;
             }
             update() {
+                // Physics
                 this.x += this.vx;
                 this.y += this.vy;
+                
+                // Friction (slow down explosion)
+                this.vx *= 0.95;
+                this.vy *= 0.95;
+
+                // Base movement
+                if (Math.abs(this.vx) < 0.1) this.vx += (Math.random() - 0.5) * 0.1;
+                if (Math.abs(this.vy) < 0.1) this.vy += (Math.random() - 0.5) * 0.1;
+
+                // Bounce edges
                 if (this.x < 0 || this.x > width) this.vx *= -1;
                 if (this.y < 0 || this.y > height) this.vy *= -1;
             }
             draw() {
-                const isLight = document.body.classList.contains('light-mode');
                 ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--node-color');
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -364,14 +401,11 @@
             }
         }
 
-        // Create Particles
-        for (let i = 0; i < 50; i++) particles.push(new Particle());
+        // Init Particles
+        for (let i = 0; i < 60; i++) particles.push(new Particle());
 
         function animate() {
-            const isLight = document.body.classList.contains('light-mode');
             ctx.clearRect(0, 0, width, height);
-            
-            // Draw Lines
             ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--line-color');
             ctx.lineWidth = 1;
 
@@ -379,7 +413,6 @@
                 particles[i].update();
                 particles[i].draw();
                 
-                // Connect particles close to each other
                 for (let j = i; j < particles.length; j++) {
                     const dx = particles[i].x - particles[j].x;
                     const dy = particles[i].y - particles[j].y;
