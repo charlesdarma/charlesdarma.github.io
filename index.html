@@ -4,644 +4,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Charles Kenrick Darma | Motion & Code</title>
-
-    <!-- DYNAMIC FAVICON (No file upload needed) -->
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%2300ff9d%22/><text y=%22.9em%22 x=%22.2em%22 font-family=%22monospace%22 font-weight=%22bold%22 font-size=%2280%22 fill=%22%23000%22>C</text></svg>">
+    <title>Charles Kenrick Darma | Portfolio</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
         rel="stylesheet">
 
-    <style>
-        /* --- VARIABLES --- */
-        :root {
-            /* Palette */
-            --bg-color: #030303;
-            --surface: rgba(255, 255, 255, 0.03);
-            --surface-border: rgba(255, 255, 255, 0.06);
-            --text-main: #f0f0f0;
-            --text-dim: #888888;
-            --accent: #b8ff01;
-            /* Acid Green for a cyber/modern feel */
-            --accent-glow: rgba(184, 255, 1, 0.4);
-
-            --font-display: 'Space Grotesk', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-        }
-
-        body.light-mode {
-            --bg-color: #f4f4f4;
-            --surface: rgba(0, 0, 0, 0.03);
-            --surface-border: rgba(0, 0, 0, 0.06);
-            --text-main: #111111;
-            --text-dim: #666666;
-            --accent: #4f46e5;
-            /* Indigo for light mode */
-            --accent-glow: rgba(79, 70, 229, 0.3);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            cursor: none;
-        }
-
-        body {
-            font-family: var(--font-display);
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            overflow-x: hidden;
-            transition: background-color 0.5s ease, color 0.5s ease;
-        }
-
-        /* --- UI ELEMENTS --- */
-
-        /* Scroll Progress Bar */
-        #scroll-progress {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 3px;
-            background: var(--accent);
-            width: 0%;
-            z-index: 99999;
-            box-shadow: 0 0 10px var(--accent);
-            transition: width 0.1s;
-        }
-
-        /* Custom Cursor */
-        #cursor {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--accent);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: width 0.2s, height 0.2s, background-color 0.2s;
-            mix-blend-mode: difference;
-        }
-
-        #cursor.hovered {
-            width: 50px;
-            height: 50px;
-            background-color: var(--accent);
-            opacity: 0.5;
-            border: none;
-        }
-
-        #cursor.click {
-            transform: translate(-50%, -50%) scale(0.8);
-        }
-
-        /* Background Canvas */
-        #bg-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
-        /* Navigation */
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 30px 5%;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 100;
-            mix-blend-mode: difference;
-        }
-
-        .logo {
-            font-weight: 700;
-            font-size: 1.5rem;
-            letter-spacing: -1px;
-        }
-
-        .magnetic-wrap {
-            display: inline-block;
-            padding: 20px;
-            /* larger hit area */
-        }
-
-        .magnetic-area {
-            display: inline-block;
-            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .theme-switch {
-            background: none;
-            border: 2px solid var(--text-main);
-            color: var(--text-main);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            cursor: none;
-            pointer-events: auto;
-        }
-
-        /* Hero */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 0 10%;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-label {
-            font-family: var(--font-mono);
-            color: var(--accent);
-            font-size: 0.9rem;
-            margin-bottom: 24px;
-            letter-spacing: 2px;
-            opacity: 0;
-            animation: fadeUp 0.8s ease forwards 0.5s;
-        }
-
-        .hero h1 {
-            font-size: clamp(3rem, 8vw, 8rem);
-            line-height: 0.9;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: -3px;
-            margin-bottom: 30px;
-            opacity: 0;
-            animation: fadeUp 0.8s ease forwards 0.7s;
-        }
-
-        .hero-desc {
-            font-size: 1.25rem;
-            color: var(--text-dim);
-            max-width: 600px;
-            line-height: 1.6;
-            opacity: 0;
-            animation: fadeUp 0.8s ease forwards 0.9s;
-        }
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Glitch Effect */
-        .glitch-wrapper {
-            position: relative;
-        }
-
-        .hero h1::before,
-        .hero h1::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-        }
-
-        .hero h1:hover::before {
-            opacity: 1;
-            color: var(--accent);
-            z-index: -1;
-            animation: glitch-1 0.4s infinite;
-        }
-
-        .hero h1:hover::after {
-            opacity: 1;
-            color: #ff00ff;
-            z-index: -2;
-            animation: glitch-2 0.4s infinite;
-        }
-
-        @keyframes glitch-1 {
-            0% {
-                transform: translate(0);
-            }
-
-            20% {
-                transform: translate(-3px, 3px);
-            }
-
-            100% {
-                transform: translate(0);
-            }
-        }
-
-        @keyframes glitch-2 {
-            0% {
-                transform: translate(0);
-            }
-
-            20% {
-                transform: translate(3px, -3px);
-            }
-
-            100% {
-                transform: translate(0);
-            }
-        }
-
-        /* Grid & Cards */
-        section {
-            padding: 100px 10%;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            perspective: 1000px;
-        }
-
-        .tilt-card {
-            background: var(--surface);
-            border: 1px solid var(--surface-border);
-            padding: 40px;
-            border-radius: 20px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            transform-style: preserve-3d;
-            transition: transform 0.1s, border-color 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .tilt-card:hover {
-            border-color: var(--accent-glow);
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Shiny hover effect */
-        .tilt-card::after {
-            content: '';
-            position: absolute;
-            top: var(--mouse-y, 50%);
-            left: var(--mouse-x, 50%);
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
-            opacity: 0;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            transition: opacity 0.3s;
-            mix-blend-mode: screen;
-        }
-
-        .tilt-card:hover::after {
-            opacity: 0.15;
-        }
-
-        .tilt-card-content {
-            transform: translateZ(30px);
-        }
-
-        .card-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        .tilt-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        .software-tag {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 5px 10px;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            font-size: 0.8rem;
-            font-family: 'JetBrains Mono', monospace;
-            border-radius: 4px;
-        }
-
-        /* Boot Screen */
-        #boot-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #000;
-            color: #00ff9d;
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'JetBrains Mono', monospace;
-            transition: opacity 0.5s;
-        }
-
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 3rem;
-            }
-
-            * {
-                cursor: auto;
-            }
-
-            #cursor {
-                display: none;
-            }
-        }
-    </style>
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-    <div id="scroll-progress"></div>
-    <div id="cursor"></div>
-    <div id="boot-screen">
-        <div>> INITIALIZING SYSTEM...</div>
-    </div>
-    <canvas id="bg-canvas"></canvas>
-
     <nav>
-        <div class="magnetic-wrap">
-            <div class="magnetic-area logo">CKD.</div>
-        </div>
-        <div class="magnetic-wrap">
-            <button class="magnetic-area theme-switch" id="theme-toggle">LIGHT MODE</button>
+        <a href="#" class="logo">CKD.</a>
+        <div class="nav-links" style="align-items: center;">
+            <a href="#work">Work</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">
+                <!-- Default Moon Icon (Switch to Dark) -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
         </div>
     </nav>
 
     <section class="hero">
-        <div class="hero-label">PORTFOLIO v2026</div>
-        <h1>
-            Charles Kenrick<br>
-            <span style="color: var(--text-dim)">Darma</span>
+        <h1 class="intro-text">
+            Creative Developer & Filmmaker.
         </h1>
-        <p class="hero-desc">
-            Motion Graphics <span style="color: var(--accent)">//</span> DaVinci Resolve <span
-                style="color: var(--accent)">//</span> Full Stack Code
-        </p>
+        <p class="hero-sub">Cinema &bull; DaVinci Resolve &bull; Roblox Development</p>
     </section>
 
-    <section>
-        <div
-            style="font-family: var(--font-display); font-size: 2rem; margin-bottom: 50px; border-bottom: 1px solid var(--surface-border); padding-bottom: 20px; color: var(--text-main);">
-            Work & Skills
+    <section id="work">
+        <div class="section-title">Selected Works</div>
+
+        <div class="gallery">
+            <!-- Items are rendered via script.js -->
         </div>
-        <div class="grid">
-            <div class="tilt-card" data-tilt>
-                <div class="tilt-card-content">
-                    <span class="card-icon">🎬</span>
-                    <h3>Motion & Edit</h3>
-                    <p>Node-based compositing, VFX, and color grading for cinematic visuals.</p>
-                    <span class="software-tag">DaVinci Resolve / Fusion</span>
+    </section>
+
+    <section id="about" style="padding-top: 50px; padding-bottom: 50px;">
+        <div class="section-title">About Me</div>
+        <div class="about-container">
+            <div class="about-image">
+                <!-- Placeholder for personal photo -->
+                <div class="profile-photo">
+                    <img src="https://placehold.co/400x400/transparent/EEE?text=Photo+Here" alt="Charles Kenrick Darma">
                 </div>
             </div>
-            <div class="tilt-card" data-tilt>
-                <div class="tilt-card-content">
-                    <span class="card-icon">⚡</span>
-                    <h3>Creative Coding</h3>
-                    <p>Building interactive web experiences and robust software logic.</p>
-                    <span class="software-tag">HTML / CSS / JS</span>
-                </div>
-            </div>
-            <div class="tilt-card" data-tilt>
-                <div class="tilt-card-content">
-                    <span class="card-icon">🎮</span>
-                    <h3>Roblox Architecture</h3>
-                    <p>Advanced Luau scripting for immersive game loops and mechanics.</p>
-                    <span class="software-tag">Roblox Studio</span>
-                </div>
-            </div>
-            <div class="tilt-card" data-tilt>
-                <div class="tilt-card-content">
-                    <span class="card-icon">♟️</span>
-                    <h3>Strategy</h3>
-                    <p>Tactical foresight and pattern recognition.</p>
-                    <span class="software-tag">Chess</span>
-                </div>
+            <div class="about-text">
+                <p>
+                    Hi, I'm <strong>Charles Kenrick Darma</strong>. I'm 15 years old and passionate about creating
+                    immersive digital experiences.
+                </p>
+                <p>
+                    My journey started with <strong>Roblox development</strong>—building, scripting (Luau), and
+                    designing interfaces for games like <em>Roommates</em>. I've also contributed to major projects like
+                    <em>LifeTogether RP</em> (QA Testing) and <em>CatWeb</em> (Localization & QA).
+                </p>
+                <p>
+                    Recently, I've been shifting my focus towards <strong>Cinema and Filmmaking</strong>. I love
+                    storytelling through visuals and have been honing my editing skills in <strong>DaVinci
+                        Resolve</strong>. My goal is to blend technical precision with cinematic artistry.
+                </p>
             </div>
         </div>
     </section>
 
-    <section style="text-align: center; margin-top: 50px;">
+    <section id="contact" class="contact">
         <h2>Ready to collaborate?</h2>
         <br>
-        <div class="magnetic-wrap">
-            <!-- CHANGE THIS EMAIL TO YOUR REAL ONE -->
-            <a href="mailto:contact@charlesdarma.my.id" class="magnetic-area"
-                style="text-decoration: none; font-size: 2rem; color: var(--accent); border: 1px solid var(--accent); padding: 20px 40px; border-radius: 50px; display: inline-block;">
-                Get In Touch
-            </a>
-        </div>
+        <a href="mailto:contact@charlesdarma.my.id" class="email-link">contact@charlesdarma.my.id</a>
     </section>
 
-    <footer style="margin-top: 100px; border-top: 1px solid var(--surface-border); background: var(--surface);">
-        <div style="text-align: center; padding: 60px 20px; font-size: 0.9rem; color: var(--text-dim);">
-            <div style="font-family: var(--font-mono); margin-bottom: 20px; color: var(--accent);">SYSTEM_STATUS: ONLINE
+    <footer>
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="https://instagram.com/charlesknd_" target="_blank" aria-label="Instagram">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                </a>
+                <a href="https://github.com/charlesdarma" target="_blank" aria-label="GitHub">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                        </path>
+                    </svg>
+                </a>
             </div>
-            &copy; 2026 Charles Kenrick Darma <br>
-            <span style="font-size: 0.8rem; opacity: 0.7;">Built with passion & code.</span>
+            <div class="footer-info">
+                &copy; 2026 Charles Kenrick Darma<br>
+                Tangerang, Indonesia
+            </div>
         </div>
     </footer>
 
-    <script>
-        // --- 1. BOOT & SCROLL PROGRESS ---
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const boot = document.getElementById('boot-screen');
-                boot.style.opacity = '0';
-                setTimeout(() => boot.remove(), 500);
-            }, 1000);
-        });
+    <!-- Modal -->
+    <div id="project-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close">&times;</button>
+            <div class="modal-scroll-wrapper">
+                <div class="modal-gallery" id="modal-gallery">
+                    <!-- Images injected here -->
+                </div>
+                <div class="modal-details">
+                    <h2 class="modal-title" id="modal-title">Title</h2>
+                    <div class="modal-meta">
+                        <span id="modal-category">Category</span>
+                        <span id="modal-year">Year</span>
+                    </div>
+                    <p class="modal-desc" id="modal-desc">Description</p>
+                    <a href="#" id="modal-link" class="modal-link" target="_blank">View Project</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        window.addEventListener('scroll', () => {
-            const scrollTotal = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollCurrent = window.scrollY;
-            const percentage = (scrollCurrent / scrollTotal) * 100;
-            document.getElementById('scroll-progress').style.width = percentage + "%";
-        });
-
-        // --- 2. CURSOR & INTERACTION ---
-        const cursor = document.getElementById('cursor');
-
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-
-            // Parallax Title Effect
-            const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
-            const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
-
-            const heroTitle = document.querySelector('.hero h1');
-            if (heroTitle) heroTitle.style.transform = `translate(${moveX}px, ${moveY}px)`;
-        });
-
-        document.addEventListener('mousedown', () => cursor.classList.add('click'));
-        document.addEventListener('mouseup', () => cursor.classList.remove('click'));
-
-        // --- 3. MAGNETIC BUTTONS ---
-        const magnets = document.querySelectorAll('.magnetic-wrap');
-        magnets.forEach(wrap => {
-            const area = wrap.querySelector('.magnetic-area');
-
-            wrap.addEventListener('mousemove', (e) => {
-                const rect = wrap.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                area.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
-                cursor.classList.add('hovered');
-            });
-
-            wrap.addEventListener('mouseleave', () => {
-                area.style.transform = 'translate(0px, 0px)';
-                cursor.classList.remove('hovered');
-            });
-        });
-
-        // --- 4. 3D TILT CARDS ---
-        document.querySelectorAll('.tilt-card').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                // Tilt Calculation
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = ((y - centerY) / centerY) * -10;
-                const rotateY = ((x - centerX) / centerX) * 10;
-
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-
-                // Shiny Effect Position
-                const after = window.getComputedStyle(card, '::after');
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
-            });
-
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = `perspective(1000px) rotateX(0) rotateY(0)`;
-            });
-        });
-
-        // --- 5. THEME TOGGLE ---
-        document.getElementById('theme-toggle').addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-        });
-
-        // --- 6. ADVANCED CANVAS BACKGROUND ---
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        let width, height;
-        let particles = [];
-        let mouse = { x: null, y: null };
-
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
-        // Click to explode
-        window.addEventListener('mousedown', () => {
-            particles.forEach(p => {
-                const dx = p.x - mouse.x;
-                const dy = p.y - mouse.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 300) {
-                    p.vx = (dx / dist) * 20;
-                    p.vy = (dy / dist) * 20;
-                }
-            });
-        });
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * width;
-                this.y = Math.random() * height;
-                this.vx = (Math.random() - 0.5) * 0.5;
-                this.vy = (Math.random() - 0.5) * 0.5;
-                this.size = Math.random() * 1.5 + 0.5;
-                this.baseX = this.x; this.baseY = this.y;
-            }
-            update() {
-                // Physics
-                this.x += this.vx;
-                this.y += this.vy;
-
-                // Friction (slow down explosion)
-                this.vx *= 0.95;
-                this.vy *= 0.95;
-
-                // Base movement
-                if (Math.abs(this.vx) < 0.1) this.vx += (Math.random() - 0.5) * 0.1;
-                if (Math.abs(this.vy) < 0.1) this.vy += (Math.random() - 0.5) * 0.1;
-
-                // Bounce edges
-                if (this.x < 0 || this.x > width) this.vx *= -1;
-                if (this.y < 0 || this.y > height) this.vy *= -1;
-            }
-            draw() {
-                ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--node-color');
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        // Init Particles
-        for (let i = 0; i < 60; i++) particles.push(new Particle());
-
-        function animate() {
-            ctx.clearRect(0, 0, width, height);
-            ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--line-color');
-            ctx.lineWidth = 1;
-
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-
-                for (let j = i; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 150) {
-                        ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-            requestAnimationFrame(animate);
-        }
-        animate();
-    </script>
+    <!-- Scripts -->
+    <script src="data.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>
