@@ -20,8 +20,17 @@
 <body>
 
     <nav>
-        <a href="#" class="logo">CKD.</a>
-        <div class="nav-links" style="align-items: center;">
+        <a href="#" id="nav-logo" class="logo">CKD.</a>
+        <button class="mobile-nav-toggle" aria-label="Toggle Menu" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+        <div class="nav-links" id="nav-links" style="align-items: center;">
+            <button class="modal-close mobile-menu-close">&times;</button>
             <a href="#work">Work</a>
             <a href="#about">About</a>
             <a href="#contact">Contact</a>
@@ -81,7 +90,7 @@
     <section id="contact" class="contact">
         <h2>Ready to collaborate?</h2>
         <br>
-        <a href="mailto:contact@charlesdarma.my.id" class="email-link">contact@charlesdarma.my.id</a>
+        <button id="contact-btn" class="modal-link">Get in Touch</button>
     </section>
 
     <footer>
@@ -111,7 +120,7 @@
         </div>
     </footer>
 
-    <!-- Modal -->
+    <!-- Project Modal -->
     <div id="project-modal" class="modal">
         <div class="modal-content">
             <button class="modal-close">&times;</button>
@@ -127,6 +136,68 @@
                     </div>
                     <p class="modal-desc" id="modal-desc">Description</p>
                     <a href="#" id="modal-link" class="modal-link" target="_blank">View Project</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="modal">
+        <div class="modal-content contact-modal-content">
+            <button class="modal-close contact-close">&times;</button>
+            <div class="contact-form-container">
+                <h2 class="modal-title">Let's Work Together</h2>
+                <br>
+                <div class="form-group">
+                    <label for="contact-category">I am a...</label>
+                    <select id="contact-category" class="form-input">
+                        <option value="Individual">Individual</option>
+                        <option value="Brand/Company">Brand / Company</option>
+                        <option value="Agency">Agency</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="contact-name">Name / Organization</label>
+                    <input type="text" id="contact-name" class="form-input" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label for="contact-email">Your Email</label>
+                    <input type="email" id="contact-email" class="form-input" placeholder="name@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="contact-desc">Project Details</label>
+                    <textarea id="contact-desc" class="form-input" rows="5"
+                        placeholder="Tell me about your project..."></textarea>
+                </div>
+
+                <div class="contact-actions">
+                    <button id="send-btn" class="modal-link"
+                        style="width: 100%; text-align: center; cursor: pointer; background: var(--text-color); color: var(--bg-color);">
+                        <span class="btn-content"
+                            style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;">
+                            <span>Send Email</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                        </span>
+                    </button>
+                    <button id="send-provider-btn" class="modal-link hidden"
+                        style="width: 100%; text-align: center; cursor: pointer; margin-top: 10px; font-size: 0.9rem;">
+                        <span>Send via Gmail</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                            </path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </button>
+                    <p style="text-align: center; margin-top: 15px; font-size: 0.85rem; color: var(--accent-color);">
+                        Prefer direct email? Write to <a href="mailto:charleskenrickdarma@gmail.com"
+                            style="text-decoration: underline;">charleskenrickdarma@gmail.com</a>
+                    </p>
                 </div>
             </div>
         </div>

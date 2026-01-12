@@ -1,7 +1,7 @@
 /* --- RESET & VARIABLES --- */
 :root {
     --bg-color: #fdfdfd;
-    --nav-bg: rgba(253, 253, 253, 0.9);
+    --nav-bg: rgba(253, 253, 253, 0.75);
     --text-color: #1a1a1a;
     --card-bg: #fff;
     --accent-color: #555;
@@ -13,7 +13,7 @@
 
 body.dark-mode {
     --bg-color: #0a0a0a;
-    --nav-bg: rgba(10, 10, 10, 0.9);
+    --nav-bg: rgba(10, 10, 10, 0.75);
     --text-color: #f0f0f0;
     --card-bg: #111;
     --accent-color: #888;
@@ -29,11 +29,31 @@ body.dark-mode {
 html {
     scroll-behavior: smooth;
     font-size: 16px;
-    scrollbar-gutter: stable;
-    /* Prevents layout shift when scrollbar disappears */
 }
 
-/* --- CUSTOM SCROLLBAR --- */
+/* Fix for Select Dropdown text overlap with arrow */
+
+select.form-input {
+    padding-right: 40px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 16px;
+}
+
+body.dark-mode select.form-input {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+/* Button Content Fade Transition */
+.btn-content {
+    transition: opacity 0.2s var(--easing);
+}
+
 /* --- CUSTOM SCROLLBAR --- */
 ::-webkit-scrollbar {
     width: 14px;
@@ -178,6 +198,9 @@ nav {
     font-family: var(--font-heading);
     font-size: 1.5rem;
     font-weight: 700;
+    text-decoration: none;
+    color: var(--text-color);
+    cursor: pointer;
 }
 
 .nav-links {
@@ -193,7 +216,11 @@ nav {
 }
 
 .nav-links a:hover {
-    color: var(--text-color);
+    color: #000;
+}
+
+body.dark-mode .nav-links a:hover {
+    color: #fff;
 }
 
 /* --- LAYOUT --- */
@@ -364,6 +391,13 @@ body.dark-mode .profile-photo img {
     backdrop-filter: blur(8px);
 }
 
+/* Dark Mode Modal Overlay Preference */
+body.dark-mode .modal {
+    background: rgba(255, 255, 255, 0.1);
+    /* "White background blur" effect for better contrast in dark mode */
+    backdrop-filter: blur(12px);
+}
+
 .modal.active {
     opacity: 1;
     pointer-events: auto;
@@ -418,6 +452,12 @@ body.dark-mode .profile-photo img {
     gap: 20px;
     padding: 40px;
     overflow-y: auto;
+}
+
+/* Dark Mode Modal Gallery Scrollbar Fix */
+body.dark-mode .modal-gallery::-webkit-scrollbar-thumb {
+    background-color: #000;
+    border: 4px solid rgba(255, 255, 255, 0.1);
 }
 
 .modal-gallery img {
@@ -486,18 +526,72 @@ body.dark-mode .profile-photo img {
     margin-bottom: 30px;
 }
 
+
+/* --- MODAL LINK (Simplified) --- */
 .modal-link {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     padding: 15px 30px;
     border: 1px solid var(--text-color);
     border-radius: 50px;
     font-weight: 500;
-    transition: all 0.3s ease;
+    background: transparent;
+    color: var(--text-color);
+    transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
 }
 
 .modal-link:hover {
     background: var(--text-color);
     color: var(--bg-color);
+    /* No shadow, no transform, just simple fill */
+}
+
+/* Ensure Get in Touch button specifically behaves well */
+#contact-btn.modal-link {
+    display: inline-flex;
+    margin-top: 30px;
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+#contact-btn:hover {
+    background: var(--text-color);
+    color: var(--bg-color);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Provider Button Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#send-provider-btn:not(.hidden) {
+    display: inline-flex !important;
+    animation: fadeInUp 0.6s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+.modal-link svg {
+    width: 20px;
+    height: 20px;
+    /* Optical alignment fix if needed */
+    position: relative;
+    top: -1px;
 }
 
 @media (max-width: 900px) {
@@ -599,5 +693,297 @@ footer {
     .about-container {
         flex-direction: column;
         gap: 40px;
+    }
+}
+
+/* --- CONTACT MODAL --- */
+.contact-modal-content {
+    max-width: 600px !important;
+    /* Smaller than project modal */
+    background: var(--bg-color);
+    /* Solid background for form */
+    padding: 0;
+    overflow-y: auto;
+}
+
+/* Custom Scrollbar override removed to match global style, BUT adding margin to clear corners */
+.contact-modal-content::-webkit-scrollbar-track {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.contact-form-container {
+    padding: 50px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 15px;
+    background: rgba(128, 128, 128, 0.05);
+    /* Subtle background */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text-color);
+    transition: border-color 0.3s ease, background 0.3s ease;
+    outline: none;
+}
+
+body:not(.dark-mode) .form-input {
+    background-color: #f5f5f5;
+}
+
+body.dark-mode .form-input {
+    background-color: #1a1a1a;
+}
+
+.form-input:focus {
+    border-color: var(--text-color);
+    background-color: transparent;
+}
+
+textarea.form-input {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.contact-actions {
+    margin-top: 30px;
+}
+
+.contact-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 20;
+}
+
+/* --- MOBILE NAVIGATION & OPTIMIZATION --- */
+
+.mobile-nav-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-color);
+    padding: 10px;
+    z-index: 1001;
+    font-size: 1.5rem;
+}
+
+/* New Close Button - Hidden by default, shown on mobile */
+.mobile-menu-close {
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    /* Show ONLY when in mobile menu */
+    .mobile-menu-close {
+        display: flex;
+        position: absolute;
+        /* Relative to nav-links fixed container */
+        top: 20px;
+        right: 20px;
+        z-index: 1002;
+        /* Inherits .modal-close styles (circle, shadow, rotation) */
+        transition-delay: 0s !important;
+        /* Override staggered animation delay */
+    }
+
+    .mobile-menu-close:hover {
+        transform: rotate(90deg);
+    }
+}
+
+/* Hide hamburger when menu is open */
+body.mobile-menu-active .mobile-nav-toggle {
+    opacity: 0;
+    pointer-events: none;
+}
+
+@media (min-width: 769px) {
+    .mobile-nav-toggle {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* Layout Adjustments */
+    section {
+        padding: 80px 5%;
+    }
+
+    .hero {
+        padding-top: 80px;
+        min-height: 80vh;
+    }
+
+    .intro-text {
+        font-size: 2.2rem;
+        word-break: break-word;
+        /* Prevent overflow */
+    }
+
+    h1,
+    h2,
+    .modal-title {
+        word-wrap: break-word;
+    }
+
+    /* Navigation */
+    .mobile-nav-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        display: block;
+        /* Override flex */
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100vh;
+        background: var(--bg-color);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center !important;
+        padding-top: 100px;
+        padding-bottom: 50px;
+        transform: translateX(100%);
+        transition: transform 0.4s var(--easing);
+        z-index: 999;
+        /* Below toggle but above content */
+        overflow-y: auto;
+    }
+
+    .nav-links.active {
+        transform: translateX(0);
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-links a {
+        display: block;
+        font-size: 1.5rem;
+        margin: 20px 0;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .nav-links.active a {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Staggered animation for links */
+    .nav-links.active a:nth-child(1) {
+        transition-delay: 0.1s;
+    }
+
+    .nav-links.active a:nth-child(2) {
+        transition-delay: 0.2s;
+    }
+
+    .nav-links.active a:nth-child(3) {
+        transition-delay: 0.3s;
+    }
+
+    .nav-links.active button {
+        transition-delay: 0.4s;
+    }
+
+    /* Theme Toggle in Mobile Menu */
+    .nav-links #theme-toggle {
+        margin: 30px auto 0;
+        transform: scale(1.2);
+        opacity: 0;
+        transition: opacity 0.4s ease 0.4s;
+        /* Added delay */
+    }
+
+    .nav-links.active #theme-toggle {
+        opacity: 1;
+    }
+
+    /* Modal Mobile Fixes */
+    .modal-content {
+        width: 100%;
+        height: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+        /* Full screen feel */
+        transform: none !important;
+        /* Disable scale animation on mobile for better perf/feel */
+    }
+
+    .modal-scroll-wrapper {
+        grid-template-columns: 1fr;
+        display: block;
+        /* Stack vertically simply */
+    }
+
+    .modal-gallery {
+        max-height: none;
+        /* Allow full expansion */
+        height: auto;
+        overflow: visible;
+        /* Let wrapper handle scroll */
+        padding: 20px;
+        padding-top: 80px;
+        /* Space for close button */
+        order: -1;
+    }
+
+    .modal-details {
+        padding: 30px 20px 100px;
+        /* Extra bottom padding */
+        height: auto;
+        /* Allow expansion */
+        min-height: 0;
+    }
+
+    .modal-close {
+        top: 20px;
+        right: 20px;
+        position: fixed;
+        /* Keep it visible while scrolling */
+        background: var(--bg-color);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .contact-modal-content {
+        width: 95% !important;
+    }
+
+    .contact-form-container {
+        padding: 30px 20px;
+    }
+
+    .form-input {
+        font-size: 16px;
+        /* Prevent IOS zoom */
+    }
+
+    .contact h2 {
+        font-size: 2rem;
     }
 }

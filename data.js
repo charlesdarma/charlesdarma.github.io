@@ -22,7 +22,7 @@ const PROJECTS = [
     {
         title: "LifeTogether RP",
         category: "QA Testing",
-        year: "1+ Year",
+        year: "ONGOING",
         description: "QA Tester for Cinnamon Software's active roleplay game.",
         fullStory: "Contributing as a QA Tester for Cinnamon Software's popular game 'LifeTogether RP'. The game has over 2.8+ billion visits and has been spotlighted by Roblox multiple times on social media. I've been ensuring quality and reporting bugs for over a year.",
         image: "assets/lifetogether.png",
@@ -32,7 +32,7 @@ const PROJECTS = [
     {
         title: "CatWeb",
         category: "Localization & QA",
-        year: "2 Years",
+        year: "ONGOING",
         description: "Indonesian Localizer, QA Tester, and active community member.",
         fullStory: "\"CatWeb allows you to easily create your own website. Customize it to perfection and share it to the world!\" - humancat222. <br><br>I've been involved for nearly 2 years as an Indonesian Localizer and QA Tester, helping the community grow.",
         image: "assets/catweb.png",
