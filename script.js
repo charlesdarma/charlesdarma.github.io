@@ -8,12 +8,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 const img = new Image();
                 img.src = project.image;
 
-                // Preload gallery images
+                // Preload & Cache Gallery Images
+                project.cachedGalleryNodes = [];
+
                 if (project.gallery && project.gallery.length > 0) {
-                    project.gallery.forEach(galleryImg => {
-                        const gImg = new Image();
-                        gImg.src = galleryImg;
+                    project.gallery.forEach(imgSrc => {
+                        // Create the actual DOM element we will use
+                        const galleryImg = document.createElement('img');
+                        galleryImg.src = imgSrc;
+                        galleryImg.alt = project.title;
+                        project.cachedGalleryNodes.push(galleryImg);
                     });
+                } else {
+                    // Cache main image as gallery content if no gallery
+                    const galleryImg = document.createElement('img');
+                    galleryImg.src = project.image;
+                    galleryImg.alt = project.title;
+                    project.cachedGalleryNodes.push(galleryImg);
                 }
             });
         }
@@ -69,18 +80,26 @@ document.addEventListener('DOMContentLoaded', () => {
             if (workSection) {
                 // Check if Lenis is active
                 if (typeof Lenis !== 'undefined') {
-                    // We need to access the 'lenis' instance created later. 
-                    // However, 'lenis' const is scoped in the block below. 
-                    // Let's rely on standard scrollIntoView or global variable if possible.
-                    // Actually, let's just use native scrollIntoView as Lenis usually patches it or handles native scroll well enough.
-                    // Or better, let's move this logic to inside the Lenis block or make 'lenis' var accessible.
-                    // For now, simpler:
+                    // Lenis handles anchor clicks via scrollTo usually, but manual trigger:
+                    // We can't easily access the lenis instance here if it's scoped below.
+                    // Fallback to native which Lenis might catch or just work.
                     workSection.scrollIntoView({ behavior: 'smooth' });
                 } else {
                     workSection.scrollIntoView({ behavior: 'smooth' });
                 }
             }
         });
+
+        // Toggle on scroll
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                scrollIndicator.classList.remove('visible');
+            } else {
+                if (window.scrollY < 10) {
+                    scrollIndicator.classList.add('visible');
+                }
+            }
+        }, { passive: true });
     }
 
     // --- 1. RENDER PROJECTS ---
@@ -182,24 +201,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Populate Gallery
         modalGallery.innerHTML = '';
-        if (project.gallery && project.gallery.length > 0) {
-            project.gallery.forEach(imgSrc => {
-                const img = document.createElement('img');
-                img.src = imgSrc;
-                img.alt = project.title;
-                modalGallery.appendChild(img);
+
+        // Use cached nodes if available
+        if (project.cachedGalleryNodes && project.cachedGalleryNodes.length > 0) {
+            project.cachedGalleryNodes.forEach(node => {
+                modalGallery.appendChild(node);
             });
         } else {
-            // Fallback to main image
-            const img = document.createElement('img');
-            img.src = project.image;
-            modalGallery.appendChild(img);
+            // Fallback (or first time if not preloaded - though we preload below)
+            if (project.gallery && project.gallery.length > 0) {
+                project.gallery.forEach(imgSrc => {
+                    const img = document.createElement('img');
+                    img.src = imgSrc;
+                    img.alt = project.title;
+                    modalGallery.appendChild(img);
+                });
+            } else {
+                // Fallback to main image
+                const img = document.createElement('img');
+                img.src = project.image;
+                modalGallery.appendChild(img);
+            }
         }
 
         modal.classList.add('active');
         document.documentElement.style.overflow = 'hidden'; // Prevent background scrolling on HTML
         document.body.style.overflow = 'hidden'; // Double check for body
     }
+
+
 
     function closeModal() {
         modal.classList.remove('active');
