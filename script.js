@@ -48,6 +48,39 @@ document.addEventListener('DOMContentLoaded', () => {
             const space = document.createTextNode(' ');
             heroText.appendChild(space);
         });
+
+        // Reveal parent now that children are ready to animate
+        heroText.style.opacity = 1;
+    }
+
+    // --- 0.5 SCROLL INDICATOR ---
+    const scrollIndicator = document.getElementById('scroll-indicator');
+    if (scrollIndicator) {
+        // Show initially after a delay
+        setTimeout(() => {
+            if (window.scrollY < 100) {
+                scrollIndicator.classList.add('visible');
+            }
+        }, 2000); // 2s delay to wait for other animations
+
+        // Click to scroll
+        scrollIndicator.addEventListener('click', () => {
+            const workSection = document.getElementById('work');
+            if (workSection) {
+                // Check if Lenis is active
+                if (typeof Lenis !== 'undefined') {
+                    // We need to access the 'lenis' instance created later. 
+                    // However, 'lenis' const is scoped in the block below. 
+                    // Let's rely on standard scrollIntoView or global variable if possible.
+                    // Actually, let's just use native scrollIntoView as Lenis usually patches it or handles native scroll well enough.
+                    // Or better, let's move this logic to inside the Lenis block or make 'lenis' var accessible.
+                    // For now, simpler:
+                    workSection.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    workSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
     }
 
     // --- 1. RENDER PROJECTS ---
@@ -55,6 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Modal Elements
     const modal = document.getElementById('project-modal');
+    const videoModal = document.getElementById('video-modal');
+    const videoFrame = document.getElementById('video-frame');
+    const videoTitle = document.getElementById('video-title');
+    const videoDesc = document.getElementById('video-desc');
+    const videoClose = document.querySelector('.video-close');
+
     const modalTitle = document.getElementById('modal-title');
     const modalCategory = document.getElementById('modal-category');
     const modalYear = document.getElementById('modal-year');
@@ -95,15 +134,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Video Type Helper
+    function openVideoModal(project) {
+        if (project.embedUrl && videoModal) {
+            videoTitle.textContent = project.title;
+            videoDesc.textContent = project.description;
+            videoFrame.src = project.embedUrl;
+
+            videoModal.classList.add('active');
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
     // Modal Logic
     function openModal(project) {
+        // STANDARD PROJECT MODAL POPULATION
         modalTitle.textContent = project.title;
         modalCategory.textContent = project.category;
         modalYear.textContent = project.year;
         // Use fullStory if available, fallback to description
         modalDesc.innerHTML = project.fullStory || project.description;
-        modalLink.href = project.link;
-        modalLink.textContent = project.link === '#' ? 'Coming Soon' : 'View Project';
+
+        // Reset Button State
+        modalLink.onclick = null; // Clear previous click handlers
+        modalLink.removeAttribute('href');
+        modalLink.classList.remove('coming-soon');
+
+        if (project.link === '#' || !project.link) {
+            // CASE 1: COMING SOON
+            modalLink.textContent = 'Coming Soon';
+            modalLink.classList.add('coming-soon');
+        } else if (project.type === 'video' && project.embedUrl) {
+            // CASE 2: VIDEO PROJECT
+            modalLink.textContent = 'View Project'; // Or 'Watch Video'
+            modalLink.style.cursor = 'pointer';
+            modalLink.onclick = (e) => {
+                e.preventDefault();
+                closeModal(); // Close current details modal
+                openVideoModal(project); // Open video overlay
+            };
+        } else {
+            // CASE 3: STANDARD DISCOVERY
+            modalLink.href = project.link;
+            modalLink.textContent = 'View Project';
+        }
 
         // Populate Gallery
         modalGallery.innerHTML = '';
@@ -122,8 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         modal.classList.add('active');
-        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-        document.body.style.paddingRight = `${scrollbarWidth}px`;
         document.documentElement.style.overflow = 'hidden'; // Prevent background scrolling on HTML
         document.body.style.overflow = 'hidden'; // Double check for body
     }
@@ -132,11 +205,62 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.classList.remove('active');
         document.documentElement.style.overflow = '';
         document.body.style.overflow = '';
-        document.body.style.paddingRight = '';
     }
 
     if (modalClose) {
         modalClose.addEventListener('click', closeModal);
+    }
+
+    // --- 2.5. SMOOTH SCROLL (LENIS) ---
+    if (typeof Lenis !== 'undefined') {
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // "Icy" ease
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+        });
+
+        // Loop
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+
+            // Scroll Indicator Logic (inside RAF for performance)
+            if (typeof scrollIndicator !== 'undefined' && scrollIndicator) {
+                if (window.scrollY > 50) {
+                    scrollIndicator.classList.remove('visible');
+                } else {
+                    // Only add back if we are at the very top
+                    if (window.scrollY < 10) {
+                        scrollIndicator.classList.add('visible');
+                    }
+                }
+            }
+        }
+        requestAnimationFrame(raf);
+
+        // Integrate with Anchors (Lenis ScrollTo)
+        document.querySelectorAll('a[href^="#"]:not(.modal-link)').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId && targetId !== '#') {
+                    // Use Lenis for scrolling
+                    lenis.scrollTo(targetId);
+
+                    // Close Mobile Menu if open
+                    // (Replaces the native scrollIntoView logic below)
+                }
+            });
+        });
+
+        // Update Scroll Trigger for Observer?
+        // IntersectionObserver works with native scroll position, which Lenis respects.
+        // So no changes needed for existing observers.
     }
 
     // Old click listener removed in favor of unified mousedown/mouseup handler below
@@ -157,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, observerOptions);
 
-    document.querySelectorAll('.work-item').forEach(item => {
+    document.querySelectorAll('.work-item, .about-text p').forEach(item => {
         observer.observe(item);
     });
 
@@ -205,21 +329,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function closeVideoModal() {
+        if (videoModal) {
+            videoModal.classList.remove('active');
+            if (videoFrame) videoFrame.src = ''; // Stop video
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+        }
+    }
+
+    if (videoClose) {
+        videoClose.addEventListener('click', closeVideoModal);
+    }
+
     // --- 5. CONTACT MODAL ---
     const contactBtn = document.getElementById('contact-btn');
     const contactModal = document.getElementById('contact-modal');
     const contactClose = document.querySelector('.contact-close');
     const sendBtn = document.getElementById('send-btn');
 
-    // Helper to get scrollbar width
-    function getScrollbarWidth() {
-        return window.innerWidth - document.documentElement.clientWidth;
-    }
+
 
     if (contactBtn && contactModal) {
         contactBtn.addEventListener('click', () => {
-            const scrollbarWidth = getScrollbarWidth();
-            document.body.style.paddingRight = `${scrollbarWidth}px`;
             contactModal.classList.add('active');
             document.documentElement.style.overflow = 'hidden';
             document.body.style.overflow = 'hidden';
@@ -229,7 +361,6 @@ document.addEventListener('DOMContentLoaded', () => {
             contactModal.classList.remove('active');
             document.documentElement.style.overflow = '';
             document.body.style.overflow = '';
-            document.body.style.paddingRight = '';
         }
 
         if (contactClose) contactClose.addEventListener('click', closeContactModal);
@@ -248,8 +379,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('mousedown', (e) => {
         const projectModal = document.getElementById('project-modal');
         const contactModal = document.getElementById('contact-modal');
+        const videoModal = document.getElementById('video-modal');
 
-        if (e.target === projectModal || e.target === contactModal) {
+        if (e.target === projectModal || e.target === contactModal || e.target === videoModal) {
             isMouseDownOnBackground = true;
         } else {
             isMouseDownOnBackground = false;
@@ -261,13 +393,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isMouseDownOnBackground) {
             const projectModal = document.getElementById('project-modal');
             const contactModal = document.getElementById('contact-modal');
+            const videoModal = document.getElementById('video-modal');
 
             if (e.target === projectModal) {
                 // Close project modal
                 projectModal.classList.remove('active');
                 document.documentElement.style.overflow = '';
                 document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
             } else if (e.target === contactModal) {
                 // Close contact modal
                 if (typeof closeContactModal === 'function') {
@@ -276,8 +408,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     contactModal.classList.remove('active');
                     document.documentElement.style.overflow = '';
                     document.body.style.overflow = '';
-                    document.body.style.paddingRight = '';
+                    document.body.style.overflow = '';
                 }
+            } else if (e.target === videoModal) {
+                closeVideoModal();
             }
         }
         // Reset

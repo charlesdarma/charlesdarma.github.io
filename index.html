@@ -30,7 +30,7 @@
             </svg>
         </button>
         <div class="nav-links" id="nav-links" style="align-items: center;">
-            <button class="modal-close mobile-menu-close">&times;</button>
+            <button class="mobile-menu-close modal-close"><span>&times;</span></button>
             <a href="#work">Work</a>
             <a href="#about">About</a>
             <a href="#contact">Contact</a>
@@ -49,6 +49,12 @@
             Creative Developer & Filmmaker.
         </h1>
         <p class="hero-sub">Cinema &bull; DaVinci Resolve &bull; Roblox Development</p>
+
+        <button id="scroll-indicator" class="scroll-indicator" aria-label="Scroll Down">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
     </section>
 
     <section id="work">
@@ -62,29 +68,23 @@
     <section id="about" style="padding-top: 50px; padding-bottom: 50px;">
         <div class="section-title">About Me</div>
         <div class="about-container">
-            <div class="about-image">
-                <!-- Placeholder for personal photo -->
-                <div class="profile-photo">
-                    <img src="https://placehold.co/400x400/transparent/EEE?text=Photo+Here" alt="Charles Kenrick Darma">
-                </div>
-            </div>
             <div class="about-text">
                 <p>
-                    Hi, I'm <strong>Charles Kenrick Darma</strong>. I'm 15 years old and passionate about creating
-                    immersive digital experiences.
+                    I'm <strong>Charles Kenrick Darma</strong>. I'm 15 and passionate about digital creation.
                 </p>
                 <p>
-                    My journey started with <strong>Roblox development</strong>—building, scripting (Luau), and
-                    designing interfaces for games like <em>Roommates</em>. I've also contributed to major projects like
-                    <em>LifeTogether RP</em> (QA Testing) and <em>CatWeb</em> (Localization & QA).
+                    I started with <strong>Roblox development</strong>, teaching myself scripting and UI design for
+                    games like <em>Roommates</em>. I enjoyed building interactive spaces and eventually contributed to
+                    major projects including <em>LifeTogether RP</em> and <em>CatWeb</em>.
                 </p>
                 <p>
-                    Recently, I've been shifting my focus towards <strong>Cinema and Filmmaking</strong>. I love
-                    storytelling through visuals and have been honing my editing skills in <strong>DaVinci
-                        Resolve</strong>. My goal is to blend technical precision with cinematic artistry.
+                    Recently, I've shifted my focus to <strong>filmmaking</strong>. I love visual storytelling and
+                    refining edits in <strong>DaVinci Resolve</strong>. My goal is simply to create high-quality
+                    experiences, whether through code or video.
                 </p>
             </div>
         </div>
+
     </section>
 
     <section id="contact" class="contact">
@@ -123,7 +123,7 @@
     <!-- Project Modal -->
     <div id="project-modal" class="modal">
         <div class="modal-content">
-            <button class="modal-close">&times;</button>
+            <button class="modal-close"><span>&times;</span></button>
             <div class="modal-scroll-wrapper">
                 <div class="modal-gallery" id="modal-gallery">
                     <!-- Images injected here -->
@@ -141,10 +141,24 @@
         </div>
     </div>
 
+    <!-- Video Modal -->
+    <div id="video-modal" class="modal">
+        <div class="modal-content video-modal-content">
+            <button class="modal-close video-close"><span>&times;</span></button>
+            <div class="video-container">
+                <iframe id="video-frame" src="" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+            </div>
+            <div style="padding: 20px; text-align: center; color: var(--text-color);">
+                <h3 id="video-title" style="margin-bottom: 5px;">Title</h3>
+                <p id="video-desc" style="font-size: 0.9rem; color: var(--accent-color);">Description</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Contact Modal -->
     <div id="contact-modal" class="modal">
         <div class="modal-content contact-modal-content">
-            <button class="modal-close contact-close">&times;</button>
+            <button class="modal-close contact-close"><span>&times;</span></button>
             <div class="contact-form-container">
                 <h2 class="modal-title">Let's Work Together</h2>
                 <br>
@@ -172,10 +186,8 @@
                 </div>
 
                 <div class="contact-actions">
-                    <button id="send-btn" class="modal-link"
-                        style="width: 100%; text-align: center; cursor: pointer; background: var(--text-color); color: var(--bg-color);">
-                        <span class="btn-content"
-                            style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;">
+                    <button id="send-btn" class="modal-link full-width-btn">
+                        <span class="btn-content">
                             <span>Send Email</span>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

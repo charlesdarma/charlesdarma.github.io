@@ -23,12 +23,62 @@ body.dark-mode {
 * {
     margin: 0;
     padding: 0;
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    /* Removes blue tap flash on mobile */
+}
+
+/* Prevent accidental text selection for a more app-like feel */
+img,
+button,
+a,
+.nav-links,
+.mobile-nav-toggle,
+.modal-close,
+.intro-text,
+.section-title,
+.logo {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 html {
-    scroll-behavior: smooth;
+    scroll-behavior: initial;
+    /* Lenis handles smooth scrolling, so reset native behavior */
     font-size: 16px;
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+html::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Opera */
+}
+
+/* --- LENIS SMOOTH SCROLL --- */
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+    pointer-events: none;
 }
 
 /* Fix for Select Dropdown text overlap with arrow */
@@ -52,12 +102,16 @@ body.dark-mode select.form-input {
 /* Button Content Fade Transition */
 .btn-content {
     transition: opacity 0.2s var(--easing);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
 }
 
-/* --- CUSTOM SCROLLBAR --- */
+/* --- CUSTOM SCROLLBAR (Restored for internal elements like Modal) --- */
 ::-webkit-scrollbar {
     width: 14px;
-    /* Wider for premium feel */
 }
 
 ::-webkit-scrollbar-track {
@@ -67,15 +121,14 @@ body.dark-mode select.form-input {
 ::-webkit-scrollbar-thumb {
     background-color: var(--accent-color);
     border-radius: 100vh;
-    /* Pill shape */
     border: 4px solid transparent;
-    /* Creates floating effect */
     background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
     background-color: var(--text-color);
 }
+
 
 body {
     background-color: var(--bg-color);
@@ -97,6 +150,54 @@ ul {
     list-style: none;
 }
 
+/* --- SCROLL INDICATOR --- */
+.scroll-indicator {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
+    z-index: 10;
+    opacity: 0;
+    /* Starts hidden, script fades it in after load/delays */
+    transition: opacity 0.5s ease;
+    animation: bounce 2s infinite;
+    color: var(--accent-color);
+    background: none;
+    border: none;
+    padding: 10px;
+}
+
+.scroll-indicator.visible {
+    opacity: 1;
+}
+
+.scroll-indicator svg {
+    width: 30px;
+    height: 30px;
+    stroke: currentColor;
+    stroke-width: 1.5;
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    40% {
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+    60% {
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+
 /* --- TYPOGRAPHY --- */
 h1,
 h2,
@@ -112,7 +213,8 @@ h4 {
     line-height: 1.2;
     margin-bottom: 2rem;
     max-width: 900px;
-    opacity: 1;
+    opacity: 0;
+    /* Hidden initially to prevent FOUC, revealed by JS */
     padding-bottom: 0.2em;
 }
 
@@ -139,6 +241,21 @@ h4 {
     to {
         opacity: 1;
         transform: translateY(0) skewY(0deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .char-reveal {
+        transform: translateY(50px);
+        /* Reduced distance for mobile */
+        animation: revealCharMobile 0.8s ease-out forwards;
+    }
+
+    @keyframes revealCharMobile {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 }
 
@@ -318,58 +435,49 @@ section {
 
 /* --- ABOUT SECTION --- */
 .about-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 60px;
-    align-items: center;
-}
-
-.about-image {
-    flex: 1;
-    min-width: 300px;
-    display: flex;
-    justify-content: center;
-}
-
-.profile-photo {
-    width: 100%;
-    max-width: 450px;
-    aspect-ratio: 1/1;
-    background: transparent;
-    /* Changed from var(--card-bg) to transparent to fix white lines */
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    overflow: hidden;
-    position: relative;
-    transition: transform 0.3s ease;
-}
-
-.profile-photo:hover {
-    transform: scale(1.02);
-}
-
-.profile-photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background: #f0f0f0;
     display: block;
-    /* Removes bottom spacing */
+    /* Align left naturally */
 }
 
-body.dark-mode .profile-photo img {
-    background: #1a1a1a;
-}
+/* Removed .about-image and .profile-photo styles */
 
 .about-text {
-    flex: 1.5;
-    min-width: 300px;
+    width: 100%;
+    max-width: 950px;
+    /* Increased to prevent awkward line breaks */
     font-size: 1.1rem;
     color: var(--text-color);
+    text-align: left;
+    /* Keep left alignment for paragraphs */
+    margin: 0;
+    /* Ensure no auto margins centering it */
 }
 
 .about-text p {
     margin-bottom: 20px;
+    line-height: 1.8;
+    /* Animation Init */
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s var(--easing);
+}
+
+.about-text p.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Staggered Delays for About Paragraphs */
+.about-text p:nth-child(1) {
+    transition-delay: 0s;
+}
+
+.about-text p:nth-child(2) {
+    transition-delay: 0.1s;
+}
+
+.about-text p:nth-child(3) {
+    transition-delay: 0.2s;
 }
 
 /* --- MODAL --- */
@@ -497,12 +605,27 @@ body.dark-mode .modal-gallery::-webkit-scrollbar-thumb {
     display: flex;
     align-items: center;
     justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
+    /* Keep potentially for button scale if desired, or remove */
+}
+
+.modal-close span {
+    display: block;
+    transition: transform 0.3s var(--easing);
+    line-height: 1;
+}
+
+.modal-close:hover span {
+    transform: rotate(90deg);
 }
 
 .modal-close:hover {
-    transform: rotate(90deg);
+    /* No rotation on the container */
+    transform: none;
 }
 
 .modal-title {
@@ -550,6 +673,35 @@ body.dark-mode .modal-gallery::-webkit-scrollbar-thumb {
     /* No shadow, no transform, just simple fill */
 }
 
+.modal-link.coming-soon {
+    border-color: transparent;
+    background: transparent;
+    opacity: 0.6;
+    cursor: default;
+    pointer-events: none;
+    /* Make completely unclickable */
+    padding: 0;
+    /* Align with left text */
+    justify-content: flex-start;
+    /* Ensure left alignment */
+}
+
+.modal-link.coming-soon:hover {
+    background: transparent;
+    color: var(--text-color);
+    /* Reset hover color change */
+    opacity: 0.6;
+}
+
+/* Ensure Get in Touch button specifically behaves well */
+#contact-btn.modal-link {
+    display: inline-flex;
+    margin-top: 30px;
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
 /* Ensure Get in Touch button specifically behaves well */
 #contact-btn.modal-link {
     display: inline-flex;
@@ -562,6 +714,10 @@ body.dark-mode .modal-gallery::-webkit-scrollbar-thumb {
 #contact-btn:hover {
     background: var(--text-color);
     color: var(--bg-color);
+}
+
+.full-width-btn {
+    width: 100%;
 }
 
 .hidden {
@@ -792,25 +948,8 @@ textarea.form-input {
     display: none;
 }
 
-@media (max-width: 768px) {
+/* Moved .mobile-menu-close styles to bottom of block to ensure specificity */
 
-    /* Show ONLY when in mobile menu */
-    .mobile-menu-close {
-        display: flex;
-        position: absolute;
-        /* Relative to nav-links fixed container */
-        top: 20px;
-        right: 20px;
-        z-index: 1002;
-        /* Inherits .modal-close styles (circle, shadow, rotation) */
-        transition-delay: 0s !important;
-        /* Override staggered animation delay */
-    }
-
-    .mobile-menu-close:hover {
-        transform: rotate(90deg);
-    }
-}
 
 /* Hide hamburger when menu is open */
 body.mobile-menu-active .mobile-nav-toggle {
@@ -868,7 +1007,8 @@ body.mobile-menu-active .mobile-nav-toggle {
         padding-top: 100px;
         padding-bottom: 50px;
         transform: translateX(100%);
-        transition: transform 0.4s var(--easing);
+        transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.3s ease;
+        /* Smoother easing + bg transition */
         z-index: 999;
         /* Below toggle but above content */
         overflow-y: auto;
@@ -895,19 +1035,19 @@ body.mobile-menu-active .mobile-nav-toggle {
     }
 
     /* Staggered animation for links */
-    .nav-links.active a:nth-child(1) {
+    .nav-links.active a:nth-of-type(1) {
         transition-delay: 0.1s;
     }
 
-    .nav-links.active a:nth-child(2) {
+    .nav-links.active a:nth-of-type(2) {
         transition-delay: 0.2s;
     }
 
-    .nav-links.active a:nth-child(3) {
+    .nav-links.active a:nth-of-type(3) {
         transition-delay: 0.3s;
     }
 
-    .nav-links.active button {
+    .nav-links.active #theme-toggle {
         transition-delay: 0.4s;
     }
 
@@ -928,11 +1068,13 @@ body.mobile-menu-active .mobile-nav-toggle {
     .modal-content {
         width: 100%;
         height: 100%;
-        max-height: 100vh;
+        max-height: 100dvh;
+        /* Use dvh for better mobile browser support */
         border-radius: 0;
         /* Full screen feel */
         transform: none !important;
         /* Disable scale animation on mobile for better perf/feel */
+        margin: 0;
     }
 
     .modal-scroll-wrapper {
@@ -971,8 +1113,14 @@ body.mobile-menu-active .mobile-nav-toggle {
     }
 
     .contact-modal-content {
-        width: 95% !important;
+        width: 100% !important;
+        /* Full width */
+        max-width: none !important;
+        height: 100dvh;
+        border-radius: 0;
+        margin: 0;
     }
+
 
     .contact-form-container {
         padding: 30px 20px;
@@ -986,4 +1134,77 @@ body.mobile-menu-active .mobile-nav-toggle {
     .contact h2 {
         font-size: 2rem;
     }
+
+    /* Fixed: Ensure Mobile Menu Close Button overrides generic modal-close styles */
+    .mobile-menu-close {
+        display: flex !important;
+        /* Force display */
+        position: absolute !important;
+        /* Force absolute relative to container */
+        top: 25px !important;
+        right: 25px !important;
+        width: 44px;
+        height: 44px;
+        z-index: 1100;
+        /* Higher than everything */
+        transition-delay: 0s !important;
+        opacity: 0;
+        transform: scale(0.8);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        background: var(--bg-color) !important;
+        /* Restore background */
+        color: var(--text-color) !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+        /* Restore shadow */
+        border-radius: 50% !important;
+        /* Ensure circle */
+    }
+
+    .nav-links.active .mobile-menu-close {
+        opacity: 1;
+        transform: scale(1);
+        transition-delay: 0.4s;
+    }
+
+    .mobile-menu-close:hover span {
+        transform: rotate(90deg);
+    }
+}
+
+/* --- VIDEO MODAL --- */
+.video-modal-content {
+    max-width: 900px !important;
+    background: var(--bg-color);
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    background: #000;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.video-close {
+    position: absolute;
+    top: -15px;
+    /* Pull it up a bit since video is top */
+    right: -15px;
+    background: var(--bg-color);
+    z-index: 20;
+    margin: 25px;
+    /* Offset margin */
 }
