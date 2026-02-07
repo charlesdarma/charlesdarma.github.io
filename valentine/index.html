@@ -1,364 +1,442 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preference Survey</title>
+    <title>Quick Question</title>
     <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-    
-    <!-- Confetti -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+
+    <!-- Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
         :root {
-            --bg: #fdf2f8;
-            --accent: #db2777; /* Pink-600 */
-            --text: #1f2937;
-            --glass: rgba(255, 255, 255, 0.8);
-            --border: rgba(255, 255, 255, 0.6);
+            --bg: linear-gradient(135deg, #ffe4e6 0%, #fda4af 100%);
+            --accent: #be123c;
+            --text: #881337;
+            --glass: rgba(255, 255, 255, 0.15);
+            --border: rgba(255, 255, 255, 0.3);
+            --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             height: 100vh;
             width: 100vw;
             overflow: hidden;
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+            background-color: var(--bg);
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* --- FILM GRAIN --- */
+        /* --- 1. CINEMATIC ELEMENTS --- */
+        .floating-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+            animation: float-up linear forwards;
+        }
+
+        @keyframes float-up {
+            to {
+                transform: translateY(-110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
         .grain {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
-            z-index: 0;
-            opacity: 0.05;
+            z-index: 50;
+            opacity: 0.03;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        /* --- MAIN CONTAINER --- */
-        .survey-container {
+        #intro-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+
+        .intro-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--accent);
+            opacity: 0;
+            filter: blur(10px);
+            transform: scale(0.95);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .intro-active {
+            opacity: 1;
+            filter: blur(0px);
+            transform: scale(1);
+        }
+
+        /* --- 2. MAIN CARD --- */
+        .card-wrapper {
             position: relative;
             z-index: 10;
             width: 90%;
             max-width: 500px;
-            height: 600px; /* Fixed height for consistency */
-            background: var(--glass);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 40px;
+            height: 600px;
+            opacity: 0;
+            /* Starts hidden */
+            transform: translateY(30px);
+            transition: all 1s ease;
         }
 
-        /* SLIDES LOGIC */
-        .slide {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+        .survey-card {
+            width: 100%;
+            height: 100%;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
             padding: 40px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+        }
+
+        /* --- SLIDES TRANSITIONS --- */
+        .slide {
+            position: absolute;
+            width: 100%;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
             pointer-events: none;
-            transform: translateY(20px);
-            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: translateX(50px);
         }
 
         .slide.active {
             opacity: 1;
             pointer-events: auto;
-            transform: translateY(0);
+            transform: translateX(0);
         }
 
         .slide.exit {
             opacity: 0;
-            transform: translateY(-20px);
+            transform: translateX(-50px);
         }
 
-        /* TYPOGRAPHY */
+        /* --- UI ELEMENTS --- */
         h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            color: var(--text);
+            font-size: 2.2rem;
             margin-bottom: 1rem;
-            text-align: center;
+            color: var(--accent);
+            text-shadow: 0 2px 10px rgba(190, 18, 60, 0.1);
         }
 
         p {
-            color: #666;
-            text-align: center;
+            color: var(--text);
             margin-bottom: 2rem;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
-        /* CHOICE CARDS */
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 12px;
             width: 100%;
         }
 
-        .option-card {
-            background: white;
-            border: 1px solid rgba(0,0,0,0.05);
+        .option {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid #e5e7eb;
+            padding: 15px;
             border-radius: 12px;
-            padding: 20px;
-            text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
         }
 
-        .option-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        .option:hover {
             border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(190, 18, 60, 0.15);
+            background: white;
         }
 
-        .option-card span {
-            display: block;
-            font-size: 2rem; /* Emoji size */
-            margin-bottom: 10px;
-        }
-
-        .option-card div {
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        /* FINAL BUTTONS */
         .btn-group {
             display: flex;
             gap: 15px;
-            margin-top: 20px;
-            width: 100%;
-            justify-content: center;
+            margin-top: 10px;
         }
 
         button {
-            padding: 12px 30px;
+            padding: 12px 32px;
             border-radius: 50px;
             border: none;
-            cursor: pointer;
-            font-weight: 600;
+            font-size: 1rem;
+            font-weight: 500;
             font-family: 'Inter', sans-serif;
-            transition: transform 0.2s;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .btn-next {
-            background: var(--text);
-            color: white;
-        }
-        
         .btn-yes {
             background: var(--accent);
             color: white;
-            padding: 15px 40px;
-            font-size: 1.1rem;
         }
 
-        /* THE ESCAPING NO BUTTON */
+        .btn-yes:hover {
+            transform: scale(1.05);
+        }
+
         .btn-no {
             background: transparent;
+            border: 1px solid #d1d5db;
             color: var(--text);
-            border: 1px solid #ccc;
-            /* Critical for the smooth movement */
-            transition: all 0.2s ease-out; 
-            position: absolute; /* Allows movement */
+        }
+
+        .btn-no:hover {
+            background: #f3f4f6;
+        }
+
+        .btn-start {
+            background: var(--accent);
+            color: white;
+            padding: 14px 40px;
         }
     </style>
 </head>
+
 <body>
+
+    <!-- Cinematic Grain -->
     <div class="grain"></div>
 
-    <div class="survey-container">
-        
-        <!-- HIDDEN FORM FOR DATA -->
-        <!-- PASTE YOUR FORMSPREE URL BELOW in action="..." -->
-        <form id="valentineForm" action="https://formspree.io/f/mvzboaje" method="POST" style="display: none;">
-            <input type="text" name="food_choice" id="inputFood">
-            <input type="text" name="date_choice" id="inputDate">
-        </form>
+    <!-- Intro Layer -->
+    <div id="intro-layer">
+        <h1 class="intro-text">Just a question.</h1>
+    </div>
 
+    <!-- Main Container -->
+    <div class="card-wrapper" id="main-container">
+        <div class="survey-card">
 
-        <!-- SLIDE 1: INTRO -->
-        <div class="slide active" id="slide1">
-            <h2>Quick Survey</h2>
-            <p>I want our Valentine's Day to be perfect.<br>Help me decide?</p>
-            <button class="btn-next" onclick="nextSlide(2)">Start</button>
-        </div>
+            <!-- DATA FORM (Hidden) -->
+            <!-- PASTE YOUR FORMSPREE LINK BELOW -->
+            <form id="valentineForm" action="https://formspree.io/f/mvzboaje" method="POST" style="display:none;">
+                <input type="text" name="food_vibe" id="inputFood">
+                <input type="text" name="activity_vibe" id="inputActivity">
+                <input type="text" name="final_answer" id="inputAnswer">
+            </form>
 
+            <!-- Slide 1: Start -->
+            <div class="slide active" id="slide1">
+                <h2>Hey [Name]</h2>
+                <p>I wanted to ask you something special, but first... a little quiz to get things right.</p>
+                <button class="btn-start" onclick="nextSlide(2)">Let's start</button>
+            </div>
 
-        <!-- SLIDE 2: FOOD -->
-        <div class="slide" id="slide2">
-            <h2>Dinner Vibes?</h2>
-            <div class="options-grid">
-                <div class="option-card" onclick="selectOption('food', 'Sushi', 3)">
-                    <span>🍣</span>
-                    <div>Sushi</div>
-                </div>
-                <div class="option-card" onclick="selectOption('food', 'Italian', 3)">
-                    <span>🍝</span>
-                    <div>Italian</div>
-                </div>
-                <div class="option-card" onclick="selectOption('food', 'Steak', 3)">
-                    <span>🥩</span>
-                    <div>Steakhouse</div>
-                </div>
-                <div class="option-card" onclick="selectOption('food', 'Street Food', 3)">
-                    <span>🌮</span>
-                    <div>Casual</div>
+            <!-- Slide 2: Treats -->
+            <div class="slide" id="slide2">
+                <h2>Favorite Treat?</h2>
+                <div class="options-grid">
+                    <div class="option" onclick="selectOption('food', 'Chocolates', 3)">🍫 Chocolates</div>
+                    <div class="option" onclick="selectOption('food', 'Flowers', 3)">💐 Flowers</div>
+                    <div class="option" onclick="selectOption('food', 'Plushies', 3)">🧸 Plushies</div>
+                    <div class="option" onclick="selectOption('food', 'Jewelry', 3)">💍 Jewelry</div>
                 </div>
             </div>
-        </div>
 
-
-        <!-- SLIDE 3: ACTIVITY -->
-        <div class="slide" id="slide3">
-            <h2>After Dinner?</h2>
-            <div class="options-grid">
-                <div class="option-card" onclick="selectOption('date', 'Movies', 4)">
-                    <span>🎬</span>
-                    <div>Movies</div>
-                </div>
-                <div class="option-card" onclick="selectOption('date', 'Arcade', 4)">
-                    <span>👾</span>
-                    <div>Arcade</div>
-                </div>
-                <div class="option-card" onclick="selectOption('date', 'Walk', 4)">
-                    <span>🌙</span>
-                    <div>Night Walk</div>
-                </div>
-                <div class="option-card" onclick="selectOption('date', 'Surprise', 4)">
-                    <span>🎁</span>
-                    <div>Surprise Me</div>
+            <!-- Slide 3: Wishlist - What she likes -->
+            <div class="slide" id="slide3">
+                <h2>On your wishlist?</h2>
+                <div class="options-grid">
+                    <div class="option" onclick="selectOption('activity', 'Makeup', 4)">💄 Makeup</div>
+                    <div class="option" onclick="selectOption('activity', 'Skincare', 4)">✨ Skincare</div>
+                    <div class="option" onclick="selectOption('activity', 'Clothes', 4)">👗 Clothes</div>
+                    <div class="option" onclick="selectOption('activity', 'Tech/Gadgets', 4)">📱 Tech</div>
                 </div>
             </div>
-        </div>
 
-
-        <!-- SLIDE 4: THE QUESTION -->
-        <div class="slide" id="slide4">
-            <img src="https://media.tenor.com/K2s3rZ3s9cwAAAAi/bubu-dudu-sseeyall.gif" style="width: 150px; border-radius: 10px; margin-bottom: 20px;">
-            <h2>One last question...</h2>
-            <p>Will you be my Valentine?</p>
-            
-            <div class="btn-group" style="height: 60px; position: relative;">
-                <button class="btn-yes" onclick="submitForm()">YES</button>
-                <button class="btn-no" id="noBtn">No</button>
+            <!-- Slide 4: The Proposal -->
+            <div class="slide" id="slide4">
+                <img src="https://media.tenor.com/K2s3rZ3s9cwAAAAi/bubu-dudu-sseeyall.gif"
+                    style="width:140px; margin-bottom: 20px; border-radius:12px;">
+                <h2>Will you be my Valentine?</h2>
+                <p>It would mean the world to me.</p>
+                <div class="btn-group">
+                    <button class="btn-yes" onclick="handleResponse('Yes')">Yes</button>
+                    <button class="btn-no" onclick="handleResponse('No')">No</button>
+                </div>
             </div>
+
+            <!-- Slide 5: Success (YES) -->
+            <div class="slide" id="slide-yes">
+                <h2>Let's go!</h2>
+                <p>I'll pick you up. Details coming soon.</p>
+                <img src="https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif"
+                    style="width:160px; border-radius:12px;">
+            </div>
+
+            <!-- Slide 6: Rejection (NO) -->
+            <div class="slide" id="slide-no">
+                <h2>No worries.</h2>
+                <p>Totally understand! We're still cool. <br>See ya around 👋</p>
+                <img src="https://media.tenor.com/2b_M392cKmsAAAAi/sad-bear.gif"
+                    style="width:140px; border-radius:12px;">
+            </div>
+
         </div>
-
-
-        <!-- SLIDE 5: SUCCESS -->
-        <div class="slide" id="slide5">
-            <h2>See you then. ❤️</h2>
-            <p>I've sent the details to my email.</p>
-            <img src="https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif" style="width: 180px; border-radius: 10px;">
-        </div>
-
     </div>
 
     <script>
-        // --- DATA COLLECTION ---
-        const formData = {
-            food: '',
-            date: ''
-        };
+        // --- 1. INTRO ANIMATION ---
+        window.addEventListener('load', () => {
+            const introText = document.querySelector('.intro-text');
+            const introLayer = document.getElementById('intro-layer');
+            const mainContainer = document.getElementById('main-container');
 
-        // --- NAVIGATION ---
-        function nextSlide(slideNumber) {
+            // Fade Text In
+            setTimeout(() => {
+                introText.classList.add('intro-active');
+            }, 500);
+
+            // Fade Layer Out
+            setTimeout(() => {
+                introText.style.opacity = '0'; // text fades first
+                setTimeout(() => {
+                    introLayer.style.opacity = '0'; // then white bg
+                    // Reveal Card
+                    setTimeout(() => {
+                        introLayer.style.display = 'none';
+                        mainContainer.style.opacity = '1';
+                        mainContainer.style.transform = 'translateY(0)';
+                    }, 800);
+                }, 1000);
+            }, 2500);
+        });
+
+        // --- 2. SURVEY LOGIC ---
+        function nextSlide(id) {
             const current = document.querySelector('.slide.active');
-            const next = document.getElementById('slide' + slideNumber);
-            
+            const next = document.getElementById('slide' + id);
+
             current.classList.remove('active');
             current.classList.add('exit');
-            
+
             setTimeout(() => {
                 next.classList.add('active');
-                current.classList.remove('exit'); // Clean up
-            }, 200);
+                current.classList.remove('exit');
+            }, 300);
         }
 
-        function selectOption(category, value, nextSlideNum) {
-            formData[category] = value;
-            // Save to hidden inputs
-            if(category === 'food') document.getElementById('inputFood').value = value;
-            if(category === 'date') document.getElementById('inputDate').value = value;
-            
-            nextSlide(nextSlideNum);
+        function selectOption(type, value, nextId) {
+            if (type === 'food') document.getElementById('inputFood').value = value;
+            if (type === 'activity') document.getElementById('inputActivity').value = value;
+            nextSlide(nextId);
         }
 
-        // --- SUBMISSION ---
-        function submitForm() {
-            // 1. Trigger Confetti
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        function handleResponse(answer) {
+            if (answer === 'Yes') {
+                // 1. Set input
+                document.getElementById('inputAnswer').value = "YES";
 
-            // 2. Submit the form using AJAX (so page doesn't reload)
-            const form = document.getElementById('valentineForm');
-            const data = new FormData(form);
-            
-            fetch(form.action, {
-                method: form.method,
-                body: data,
-                headers: {
-                    'Accept': 'application/json'
-                }
-            }).then(response => {
-                if (response.ok) {
-                    nextSlide(5); // Show Success Slide
-                } else {
-                    alert("Oops! There was a problem sending your answer, but I know you said Yes!");
-                    nextSlide(5);
-                }
-            });
+                // 2. Confetti
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#be123c', '#fda4af', '#881337', '#ffffff'] });
+
+                // 3. Send Data
+                const form = document.getElementById('valentineForm');
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                // 4. Show Success Slide
+                document.getElementById('slide4').classList.remove('active');
+                document.getElementById('slide-yes').classList.add('active');
+
+            } else {
+                // 1. Set input to NO
+                document.getElementById('inputAnswer').value = "NO";
+
+                // 2. Send Data even if NO
+                const form = document.getElementById('valentineForm');
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                // 3. Show Rejection Slide
+                document.getElementById('slide4').classList.remove('active');
+                document.getElementById('slide-no').classList.add('active');
+            }
         }
 
-        // --- THE "NO" BUTTON PHYSICS (FIXED) ---
-        const noBtn = document.getElementById('noBtn');
-        const slide4 = document.getElementById('slide4');
+        // --- 3. MOTION GRAPHICS ---
+        function createHearts() {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.bottom = '-50px';
+            heart.style.fontSize = Math.random() * 20 + 10 + 'px';
+            const duration = Math.random() * 5 + 5;
+            heart.style.animationDuration = duration + 's';
+            heart.style.opacity = Math.random() * 0.5 + 0.3;
 
-        function moveButton() {
-            // 1. Get container dimensions (we move RELATIVE to the slide, not the window)
-            // This ensures it never goes off screen because it stays in the box
-            const containerRect = slide4.getBoundingClientRect();
-            const btnRect = noBtn.getBoundingClientRect();
+            document.body.appendChild(heart);
 
-            // 2. Calculate max boundaries inside the card
-            // We subtract padding (40px) and button size
-            const maxWidth = containerRect.width - btnRect.width - 80; 
-            const maxHeight = containerRect.height - btnRect.height - 80;
-
-            // 3. Random Position
-            const newX = Math.random() * maxWidth;
-            const newY = Math.random() * maxHeight;
-
-            // 4. Apply (using transform is smoother than top/left)
-            // We need absolute positioning within the relative slide
-            noBtn.style.position = 'absolute';
-            noBtn.style.left = `${newX}px`;
-            noBtn.style.top = `${newY}px`;
+            setTimeout(() => {
+                heart.remove();
+            }, duration * 1000);
         }
 
-        noBtn.addEventListener('mouseover', moveButton);
-        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveButton(); });
+        setInterval(createHearts, 800);
 
+        // Initial hearts
+        for (let i = 0; i < 10; i++) {
+            setTimeout(createHearts, i * 200);
+        }
     </script>
 </body>
+
 </html>
