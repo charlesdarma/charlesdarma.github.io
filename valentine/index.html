@@ -3,191 +3,362 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For You ❤️</title>
+    <title>Preference Survey</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     
-    <!-- Importing a cute font from Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
-    
-    <!-- Importing the Confetti library -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <!-- Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
+        :root {
+            --bg: #fdf2f8;
+            --accent: #db2777; /* Pink-600 */
+            --text: #1f2937;
+            --glass: rgba(255, 255, 255, 0.8);
+            --border: rgba(255, 255, 255, 0.6);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            margin: 0;
-            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
-            font-family: 'Indie Flower', cursive;
-            overflow: hidden; /* Prevents scrollbars when button moves */
         }
 
-        .container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            max-width: 90%;
+        /* --- FILM GRAIN --- */
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        h1 {
-            color: #d63384;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-
-        .gif-container img {
-            width: 200px;
-            height: auto;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .buttons {
+        /* --- MAIN CONTAINER --- */
+        .survey-container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 500px;
+            height: 600px; /* Fixed height for consistency */
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
             display: flex;
+            flex-direction: column;
             justify-content: center;
-            gap: 20px;
-            position: relative; /* Needed for absolute positioning context if we wanted to contain it, but we'll move relative to body */
+            padding: 40px;
+        }
+
+        /* SLIDES LOGIC */
+        .slide {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .slide.exit {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        /* TYPOGRAPHY */
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--text);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        p {
+            color: #666;
+            text-align: center;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        /* CHOICE CARDS */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .option-card {
+            background: white;
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-color: var(--accent);
+        }
+
+        .option-card span {
+            display: block;
+            font-size: 2rem; /* Emoji size */
+            margin-bottom: 10px;
+        }
+
+        .option-card div {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* FINAL BUTTONS */
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            width: 100%;
+            justify-content: center;
         }
 
         button {
             padding: 12px 30px;
-            font-size: 1.2rem;
-            border: none;
             border-radius: 50px;
+            border: none;
             cursor: pointer;
-            font-family: 'Indie Flower', cursive;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
             transition: transform 0.2s;
         }
 
-        #yesBtn {
-            background-color: #28a745;
+        .btn-next {
+            background: var(--text);
             color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
-        #yesBtn:hover {
-            transform: scale(1.1);
-            background-color: #218838;
-        }
-
-        #noBtn {
-            background-color: #dc3545;
+        
+        .btn-yes {
+            background: var(--accent);
             color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            position: relative; /* Allows us to change to absolute later */
+            padding: 15px 40px;
+            font-size: 1.1rem;
         }
 
-        /* Mobile specific adjustments */
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 1.8rem;
-            }
-            .gif-container img {
-                width: 150px;
-            }
+        /* THE ESCAPING NO BUTTON */
+        .btn-no {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid #ccc;
+            /* Critical for the smooth movement */
+            transition: all 0.2s ease-out; 
+            position: absolute; /* Allows movement */
         }
     </style>
 </head>
 <body>
+    <div class="grain"></div>
 
-    <div class="container">
-        <div class="gif-container" id="gifContainer">
-            <!-- 
-               CHANGE THE IMAGE LINK BELOW to customize. 
-               This is the "asking" image.
-            -->
-            <img src="https://media.tenor.com/K2s3rZ3s9cwAAAAi/bubu-dudu-sseeyall.gif" alt="Cute Bear">
+    <div class="survey-container">
+        
+        <!-- HIDDEN FORM FOR DATA -->
+        <!-- PASTE YOUR FORMSPREE URL BELOW in action="..." -->
+        <form id="valentineForm" action="https://formspree.io/f/mvzboaje" method="POST" style="display: none;">
+            <input type="text" name="food_choice" id="inputFood">
+            <input type="text" name="date_choice" id="inputDate">
+        </form>
+
+
+        <!-- SLIDE 1: INTRO -->
+        <div class="slide active" id="slide1">
+            <h2>Quick Survey</h2>
+            <p>I want our Valentine's Day to be perfect.<br>Help me decide?</p>
+            <button class="btn-next" onclick="nextSlide(2)">Start</button>
         </div>
 
-        <h1 id="question">Will you be my Valentine?</h1>
 
-        <div class="buttons">
-            <button id="yesBtn">Yes</button>
-            <button id="noBtn">No</button>
+        <!-- SLIDE 2: FOOD -->
+        <div class="slide" id="slide2">
+            <h2>Dinner Vibes?</h2>
+            <div class="options-grid">
+                <div class="option-card" onclick="selectOption('food', 'Sushi', 3)">
+                    <span>🍣</span>
+                    <div>Sushi</div>
+                </div>
+                <div class="option-card" onclick="selectOption('food', 'Italian', 3)">
+                    <span>🍝</span>
+                    <div>Italian</div>
+                </div>
+                <div class="option-card" onclick="selectOption('food', 'Steak', 3)">
+                    <span>🥩</span>
+                    <div>Steakhouse</div>
+                </div>
+                <div class="option-card" onclick="selectOption('food', 'Street Food', 3)">
+                    <span>🌮</span>
+                    <div>Casual</div>
+                </div>
+            </div>
         </div>
+
+
+        <!-- SLIDE 3: ACTIVITY -->
+        <div class="slide" id="slide3">
+            <h2>After Dinner?</h2>
+            <div class="options-grid">
+                <div class="option-card" onclick="selectOption('date', 'Movies', 4)">
+                    <span>🎬</span>
+                    <div>Movies</div>
+                </div>
+                <div class="option-card" onclick="selectOption('date', 'Arcade', 4)">
+                    <span>👾</span>
+                    <div>Arcade</div>
+                </div>
+                <div class="option-card" onclick="selectOption('date', 'Walk', 4)">
+                    <span>🌙</span>
+                    <div>Night Walk</div>
+                </div>
+                <div class="option-card" onclick="selectOption('date', 'Surprise', 4)">
+                    <span>🎁</span>
+                    <div>Surprise Me</div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- SLIDE 4: THE QUESTION -->
+        <div class="slide" id="slide4">
+            <img src="https://media.tenor.com/K2s3rZ3s9cwAAAAi/bubu-dudu-sseeyall.gif" style="width: 150px; border-radius: 10px; margin-bottom: 20px;">
+            <h2>One last question...</h2>
+            <p>Will you be my Valentine?</p>
+            
+            <div class="btn-group" style="height: 60px; position: relative;">
+                <button class="btn-yes" onclick="submitForm()">YES</button>
+                <button class="btn-no" id="noBtn">No</button>
+            </div>
+        </div>
+
+
+        <!-- SLIDE 5: SUCCESS -->
+        <div class="slide" id="slide5">
+            <h2>See you then. ❤️</h2>
+            <p>I've sent the details to my email.</p>
+            <img src="https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif" style="width: 180px; border-radius: 10px;">
+        </div>
+
     </div>
 
     <script>
-        const yesBtn = document.getElementById('yesBtn');
-        const noBtn = document.getElementById('noBtn');
-        const question = document.getElementById('question');
-        const gifContainer = document.getElementById('gifContainer');
+        // --- DATA COLLECTION ---
+        const formData = {
+            food: '',
+            date: ''
+        };
 
-        // Logic to make the NO button escape
-        function moveButton() {
-            // Get the window dimensions
-            const windowWidth = window.innerWidth;
-            const windowHeight = window.innerHeight;
+        // --- NAVIGATION ---
+        function nextSlide(slideNumber) {
+            const current = document.querySelector('.slide.active');
+            const next = document.getElementById('slide' + slideNumber);
             
-            // Get button dimensions
-            const btnWidth = noBtn.offsetWidth;
-            const btnHeight = noBtn.offsetHeight;
-
-            // Calculate random positions
-            // We subtract the button size to ensure it stays on screen
-            const randomX = Math.random() * (windowWidth - btnWidth - 50); 
-            const randomY = Math.random() * (windowHeight - btnHeight - 50);
-
-            // Apply new style to move the button
-            noBtn.style.position = 'absolute';
-            noBtn.style.left = randomX + 'px';
-            noBtn.style.top = randomY + 'px';
+            current.classList.remove('active');
+            current.classList.add('exit');
+            
+            setTimeout(() => {
+                next.classList.add('active');
+                current.classList.remove('exit'); // Clean up
+            }, 200);
         }
 
-        // Event listener for Desktop (Hover)
-        noBtn.addEventListener('mouseover', moveButton);
-        
-        // Event listener for Mobile (Tap/Touch)
-        // On mobile, "mouseover" doesn't exist, so we use touchstart
-        noBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Prevents the button from actually being clicked
-            moveButton();
-        });
-
-        // Logic for the YES button
-        yesBtn.addEventListener('click', () => {
-            // 1. Change the text
-            question.innerHTML = "Yay! I knew you'd say Yes! ❤️";
+        function selectOption(category, value, nextSlideNum) {
+            formData[category] = value;
+            // Save to hidden inputs
+            if(category === 'food') document.getElementById('inputFood').value = value;
+            if(category === 'date') document.getElementById('inputDate').value = value;
             
-            // 2. Hide the buttons
-            document.querySelector('.buttons').style.display = 'none';
+            nextSlide(nextSlideNum);
+        }
 
-            // 3. Change the image
-            // CHANGE THE IMAGE LINK BELOW for the "success" image
-            gifContainer.innerHTML = '<img src="https://media.tenor.com/gUiu1zyxfzYAAAAi/bear-kiss-bear-kisses.gif" alt="Bear Kiss">';
+        // --- SUBMISSION ---
+        function submitForm() {
+            // 1. Trigger Confetti
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
 
-            // 4. Trigger Confetti
-            triggerConfetti();
-        });
-
-        // Confetti Function
-        function triggerConfetti() {
-            const duration = 5 * 1000;
-            const animationEnd = Date.now() + duration;
-            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-            function randomInRange(min, max) {
-                return Math.random() * (max - min) + min;
-            }
-
-            const interval = setInterval(function() {
-                const timeLeft = animationEnd - Date.now();
-
-                if (timeLeft <= 0) {
-                    return clearInterval(interval);
+            // 2. Submit the form using AJAX (so page doesn't reload)
+            const form = document.getElementById('valentineForm');
+            const data = new FormData(form);
+            
+            fetch(form.action, {
+                method: form.method,
+                body: data,
+                headers: {
+                    'Accept': 'application/json'
                 }
-
-                const particleCount = 50 * (timeLeft / duration);
-                
-                // Since particles fall down, start a bit higher than random
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-            }, 250);
+            }).then(response => {
+                if (response.ok) {
+                    nextSlide(5); // Show Success Slide
+                } else {
+                    alert("Oops! There was a problem sending your answer, but I know you said Yes!");
+                    nextSlide(5);
+                }
+            });
         }
+
+        // --- THE "NO" BUTTON PHYSICS (FIXED) ---
+        const noBtn = document.getElementById('noBtn');
+        const slide4 = document.getElementById('slide4');
+
+        function moveButton() {
+            // 1. Get container dimensions (we move RELATIVE to the slide, not the window)
+            // This ensures it never goes off screen because it stays in the box
+            const containerRect = slide4.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+
+            // 2. Calculate max boundaries inside the card
+            // We subtract padding (40px) and button size
+            const maxWidth = containerRect.width - btnRect.width - 80; 
+            const maxHeight = containerRect.height - btnRect.height - 80;
+
+            // 3. Random Position
+            const newX = Math.random() * maxWidth;
+            const newY = Math.random() * maxHeight;
+
+            // 4. Apply (using transform is smoother than top/left)
+            // We need absolute positioning within the relative slide
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = `${newX}px`;
+            noBtn.style.top = `${newY}px`;
+        }
+
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveButton(); });
+
     </script>
 </body>
 </html>
