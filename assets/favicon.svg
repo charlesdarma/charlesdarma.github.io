@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <style>
+    text { font-family: "Times New Roman", serif; font-weight: bold; fill: #000; }
+    @media (prefers-color-scheme: dark) { text { fill: #fff; } }
+  </style>
+  <!-- Background (Optional: remove rect if you want transparent) -->
+  <rect width="512" height="512" fill="transparent"/>
+  
+  <!-- The Logo Text -->
+  <text x="50%" y="55%" text-anchor="middle" font-size="280" dy=".3em">CKD.</text>
+</svg>
