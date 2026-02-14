@@ -50,52 +50,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- INTRO & AUDIO START LOGIC ---
     const introScreen = document.getElementById('intro-screen');
-    const introPrompt = document.getElementById('intro-prompt');
-    const introEncounter = document.getElementById('intro-encounter');
     const bgm = document.getElementById('bgm');
-    const sfxEncounter = document.getElementById('sfx-encounter');
+    // const muteBtn = document.getElementById('mute-btn'); // Removed
 
     // Function to start the experience
     const startExperience = () => {
-        // 1. Resume Audio Context (for Web Audio API SFX)
+        // 1. Resume Audio Context (for SFX)
         if (audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
 
-        // 2. Play Encounter SFX immediately
-        if (sfxEncounter) {
-            sfxEncounter.volume = 0.5;
-            sfxEncounter.play().catch(e => console.log("SFX Play failed", e));
+        // 2. Play BGM
+        // 2. Play BGM
+        if (bgm) {
+            bgm.volume = 0.4;
+            bgm.play().catch(e => {
+                console.log("Auto-play prevented (normal browser behavior):", e);
+            });
         }
 
-        // 3. Visual Sequence
-        // Hide Prompt / Show Encounter Text
-        introPrompt.style.display = 'none';
-        introEncounter.style.display = 'block';
-
-        // Optional: Add screen flash effect via CSS class
-        introScreen.classList.add('flash-effect');
-
-        // 4. Wait for effect (approx 3 seconds), then start Game
+        // 3. Hide Intro Screen
+        introScreen.style.opacity = '0';
         setTimeout(() => {
-            // Fade out intro
-            introScreen.style.opacity = '0';
+            introScreen.style.display = 'none';
+            document.getElementById('game-container').classList.add('fade-in');
+        }, 1000);
 
-            // Start BGM
-            if (bgm) {
-                bgm.volume = 0.4;
-                bgm.play().catch(e => console.log("BGM Play failed", e));
-            }
-
-            // Reveal Game
-            setTimeout(() => {
-                introScreen.style.display = 'none';
-                document.getElementById('game-container').classList.add('fade-in');
-            }, 1000);
-
-        }, 2500); // 2.5s delay for the "Encounter" feel before BGM starts
-
-        // Remove listener
+        // Remove listener so it doesn't fire again
         document.removeEventListener('click', startExperience);
         introScreen.removeEventListener('click', startExperience);
     };

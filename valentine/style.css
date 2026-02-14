@@ -60,53 +60,6 @@ body {
         transform: translateY(-20vh) rotate(360deg);
         opacity: 0;
     }
-
-    100% {
-        transform: translateY(-20vh) rotate(360deg);
-        opacity: 0;
-    }
-}
-
-/* Intro Flash Effect */
-.flash-effect {
-    animation: screen-flash 2.5s ease-out;
-}
-
-@keyframes screen-flash {
-    0% {
-        background: #000;
-    }
-
-    10% {
-        background: #fff;
-    }
-
-    /* FLASH */
-    20% {
-        background: #000;
-    }
-
-    30% {
-        background: #fff;
-    }
-
-    /* FLASH */
-    40% {
-        background: #000;
-    }
-
-    50% {
-        background: #fff;
-    }
-
-    /* FLASH */
-    60% {
-        background: #000;
-    }
-
-    100% {
-        background: #000;
-    }
 }
 
 /* --- MAIN CARD --- */
