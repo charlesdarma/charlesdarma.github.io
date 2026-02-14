@@ -1,0 +1,391 @@
+/* Pokémon Theme CSS */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+    --bg-color: #f0f0f0;
+    --card-bg: #ffffff;
+    --primary-red: #ff0000;
+    --primary-blue: #3b4cca;
+    --primary-yellow: #ffde00;
+    --text-color: #202020;
+    --border-color: #202020;
+    --border-width: 4px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Press Start 2P', cursive;
+    background-color: var(--bg-color);
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(255, 0, 0, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(59, 76, 202, 0.1) 0%, transparent 20%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    color: var(--text-color);
+}
+
+/* --- CINEMATIC ELEMENTS --- */
+/* Custom Pokeball/Heart floating animation */
+.floating-element {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1;
+    animation: float-up linear forwards;
+    font-size: 24px;
+}
+
+@keyframes float-up {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-20vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* --- MAIN CARD --- */
+.card-wrapper {
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    z-index: 10;
+}
+
+.game-boy-frame {
+    background-color: #c0c0c0;
+    background: linear-gradient(to bottom right, #e0e0e0, #c0c0c0, #a0a0a0);
+    padding: 20px;
+    border-radius: 10px 10px 40px 10px;
+    box-shadow:
+        5px 5px 15px rgba(0, 0, 0, 0.4),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.5),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.2);
+    position: relative;
+    border: 1px solid #999;
+}
+
+.screen-border {
+    background-color: #555;
+    background: linear-gradient(to bottom, #777, #444);
+    padding: 30px 40px;
+    /* Wider bezel */
+    border-radius: 15px 15px 40px 15px;
+    box-shadow:
+        inset 0 0 10px rgba(0, 0, 0, 0.8),
+        0 2px 3px rgba(255, 255, 255, 0.3);
+    margin-bottom: 20px;
+}
+
+.screen-power {
+    width: 10px;
+    height: 10px;
+    background-color: #f00;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    box-shadow: 0 0 5px #f00;
+    animation: blink 2s infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.screen-container {
+    background-color: #9bbc0f;
+    /* Original GB Green-ish tint, or white for modern */
+    background: #ffffff;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: 4px;
+    height: 400px;
+    position: relative;
+    overflow: hidden;
+    /* Pixel grid effect */
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+    background-size: 4px 4px;
+}
+
+/* --- DIALOG BOX STYLE --- */
+/* --- DIALOG BOX STYLE --- */
+.dialog-box {
+    width: 100%;
+    background: #fff;
+    /* RPG Style Border */
+    border: 4px solid #202020;
+    border-radius: 5px;
+    padding: 15px;
+    min-height: 100px;
+    flex-shrink: 0;
+    z-index: 5;
+    box-shadow: 0 0 0 2px #fff inset;
+    /* Inner white outline effect */
+    margin-top: -5px;
+    /* Slight overlap or adjustment */
+}
+
+.brand-text {
+    text-align: center;
+    margin-top: 30px;
+    color: #333;
+    /* Darker for better contrast */
+    text-transform: uppercase;
+    font-size: 12px;
+    /* Slightly larger */
+    letter-spacing: 3px;
+    font-weight: bold;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.2);
+    font-style: italic;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    /* Stack content and dialog vert */
+    justify-content: space-between;
+    /* Space out content and dialog */
+    align-items: center;
+    padding: 0;
+    /* Removing padding as dialog is now part of flow */
+    transition: transform 0.3s ease-in-out, opacity 0.3s;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(100%);
+    background: white;
+}
+
+.slide.active {
+    opacity: 1;
+    font-size: 1rem;
+    pointer-events: auto;
+    transform: translateX(0);
+}
+
+.slide.exit {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+.slide-content {
+    flex-grow: 1;
+    /* Take up all available top space */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    overflow-y: auto;
+    /* Allow scroll if content is too tall */
+}
+
+h2 {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+p {
+    font-size: 0.8rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* --- OPTIONS GRID --- */
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    width: 100%;
+}
+
+.option {
+    background: #fff;
+    border: 2px solid var(--border-color);
+    padding: 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-align: left;
+    position: relative;
+    padding-left: 30px;
+    transition: background 0.2s;
+}
+
+.option:hover {
+    background: #f0f0f0;
+}
+
+.option::before {
+    content: '>';
+    position: absolute;
+    left: 10px;
+    opacity: 0;
+}
+
+.option:hover::before {
+    opacity: 1;
+}
+
+/* --- BUTTONS --- */
+.btn-group {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    /* Center buttons horizontally */
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
+    /* Reduced from 20px */
+}
+
+button {
+    font-family: 'Press Start 2P', cursive;
+    background: #fff;
+    border: 2px solid var(--border-color);
+    padding: 10px 20px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+button:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+}
+
+.btn-yes:hover {
+    background: var(--primary-blue);
+    color: white;
+}
+
+.btn-no:hover {
+    background: var(--primary-red);
+    color: white;
+}
+
+/* Img Styling */
+.pokemon-img {
+    width: 120px;
+    height: 120px;
+    image-rendering: pixelated;
+    margin-bottom: 20px;
+}
+
+/* Decor */
+.decor-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(to right, #ccc, #999);
+    display: inline-block;
+    margin: 5px;
+    box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.d-pad {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    margin-top: 20px;
+}
+
+.d-pad div {
+    background: #333;
+    background: linear-gradient(to bottom right, #444, #222);
+    position: absolute;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+}
+
+.d-pad .up {
+    top: 0;
+    left: 35px;
+    width: 30px;
+    height: 35px;
+}
+
+.d-pad .down {
+    bottom: 0;
+    left: 35px;
+    width: 30px;
+    height: 35px;
+}
+
+.d-pad .left {
+    top: 35px;
+    left: 0;
+    width: 35px;
+    height: 30px;
+}
+
+.d-pad .right {
+    top: 35px;
+    right: 0;
+    width: 35px;
+    height: 30px;
+}
+
+.d-pad .center {
+    top: 35px;
+    left: 35px;
+    width: 30px;
+    height: 30px;
+    background: radial-gradient(circle, #333, #111);
+}
+
+.ab-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 40px;
+    margin-left: 20px;
+}
+
+.ab-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #a12a2a;
+    background: radial-gradient(circle at 30% 30%, #ff4d4d, #990000);
+    box-shadow:
+        2px 2px 5px rgba(0, 0, 0, 0.4),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.2);
+}

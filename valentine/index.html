@@ -4,440 +4,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quick Question</title>
+    <title>Pokémon Valentine Quiz</title>
     <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
-        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 
     <!-- Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-    <style>
-        :root {
-            --bg: linear-gradient(135deg, #ffe4e6 0%, #fda4af 100%);
-            --accent: #be123c;
-            --text: #881337;
-            --glass: rgba(255, 255, 255, 0.15);
-            --border: rgba(255, 255, 255, 0.3);
-            --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* --- 1. CINEMATIC ELEMENTS --- */
-        .floating-heart {
-            position: fixed;
-            pointer-events: none;
-            z-index: 1;
-            animation: float-up linear forwards;
-        }
-
-        @keyframes float-up {
-            to {
-                transform: translateY(-110vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        .grain {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 50;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
-
-        #intro-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #fff;
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 1s ease;
-        }
-
-        .intro-text {
-            font-family: 'Playfair Display', serif;
-            font-size: 3rem;
-            color: var(--accent);
-            opacity: 0;
-            filter: blur(10px);
-            transform: scale(0.95);
-            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .intro-active {
-            opacity: 1;
-            filter: blur(0px);
-            transform: scale(1);
-        }
-
-        /* --- 2. MAIN CARD --- */
-        .card-wrapper {
-            position: relative;
-            z-index: 10;
-            width: 90%;
-            max-width: 500px;
-            height: 600px;
-            opacity: 0;
-            /* Starts hidden */
-            transform: translateY(30px);
-            transition: all 1s ease;
-        }
-
-        .survey-card {
-            width: 100%;
-            height: 100%;
-            background: var(--glass);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            box-shadow: var(--card-shadow);
-            position: relative;
-            overflow: hidden;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* --- SLIDES TRANSITIONS --- */
-        .slide {
-            position: absolute;
-            width: 100%;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 0;
-            pointer-events: none;
-            transform: translateX(50px);
-        }
-
-        .slide.active {
-            opacity: 1;
-            pointer-events: auto;
-            transform: translateX(0);
-        }
-
-        .slide.exit {
-            opacity: 0;
-            transform: translateX(-50px);
-        }
-
-        /* --- UI ELEMENTS --- */
-        h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
-            margin-bottom: 1rem;
-            color: var(--accent);
-            text-shadow: 0 2px 10px rgba(190, 18, 60, 0.1);
-        }
-
-        p {
-            color: var(--text);
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            width: 100%;
-        }
-
-        .option {
-            background: rgba(255, 255, 255, 0.6);
-            border: 1px solid #e5e7eb;
-            padding: 15px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .option:hover {
-            border-color: var(--accent);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(190, 18, 60, 0.15);
-            background: white;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        button {
-            padding: 12px 32px;
-            border-radius: 50px;
-            border: none;
-            font-size: 1rem;
-            font-weight: 500;
-            font-family: 'Inter', sans-serif;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-yes {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-yes:hover {
-            transform: scale(1.05);
-        }
-
-        .btn-no {
-            background: transparent;
-            border: 1px solid #d1d5db;
-            color: var(--text);
-        }
-
-        .btn-no:hover {
-            background: #f3f4f6;
-        }
-
-        .btn-start {
-            background: var(--accent);
-            color: white;
-            padding: 14px 40px;
-        }
-    </style>
 </head>
 
 <body>
 
-    <!-- Cinematic Grain -->
-    <div class="grain"></div>
+    <!-- BGM -->
+    <!-- Using a more reliable source (Pokemon Center Theme) -->
+    <audio id="bgm" loop>
+        <source src="https://fi.zophar.net/soundfiles/gameboy-gbs/pokemon-red/10%20-%20Pokemon%20Center.mp3"
+            type="audio/mp3">
+    </audio>
 
-    <!-- Intro Layer -->
-    <div id="intro-layer">
-        <h1 class="intro-text">Just a question.</h1>
+    <!-- Mute Button REMOVED as per user request -->
+    <!-- Sound enabled by default on interaction -->
+
+    <!-- Intro / Loading Screen -->
+    <div id="intro-screen"
+        style="position:fixed; top:0; left:0; width:100%; height:100%; background:#000; color:#fff; display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:9999; transition: opacity 1s; cursor:pointer;">
+        <h1 style="font-family: 'Press Start 2P'; text-align:center; line-height:2; margin-bottom: 20px;">
+            A Wild QUESTION <br> Appeared!
+        </h1>
+        <p style="font-family: 'Press Start 2P'; font-size: 10px; animation: blink 1s infinite;">
+            ( CLICK TO START )
+        </p>
     </div>
 
-    <!-- Main Container -->
-    <div class="card-wrapper" id="main-container">
-        <div class="survey-card">
+    <!-- Main GameBoy Container -->
+    <div class="card-wrapper" id="game-container">
+        <div class="game-boy-frame">
+            <div class="screen-border">
+                <div class="screen-power"></div>
+                <div class="screen-container">
 
-            <!-- DATA FORM (Hidden) -->
-            <!-- PASTE YOUR FORMSPREE LINK BELOW -->
-            <form id="valentineForm" action="https://formspree.io/f/mvzboaje" method="POST" style="display:none;">
-                <input type="text" name="food_vibe" id="inputFood">
-                <input type="text" name="activity_vibe" id="inputActivity">
-                <input type="text" name="final_answer" id="inputAnswer">
-            </form>
+                    <!-- Hidden Form -->
+                    <form id="valentineForm" action="https://formspree.io/f/mvzboaje" method="POST"
+                        style="display:none;">
+                        <input type="text" name="favorite_berry" id="inputBerry">
+                        <input type="text" name="travel_region" id="inputRegion">
+                        <input type="text" name="battle_style" id="inputBattle">
+                        <input type="text" name="favorite_ball" id="inputBall">
+                        <input type="text" name="trainer_type" id="inputTrainerType">
+                        <input type="text" name="final_answer" id="inputAnswer">
+                    </form>
 
-            <!-- Slide 1: Start -->
-            <div class="slide active" id="slide1">
-                <h2>Hey Dae</h2>
-                <p>I wanted to ask you something special, but first... a little quiz to get things right.</p>
-                <button class="btn-start" onclick="nextSlide(2)">Let's start</button>
-            </div>
+                    <!-- Slide 1: Start -->
+                    <div class="slide active" id="slide1">
+                        <div class="slide-content">
+                            <!-- Placeholder PokeBall Image -->
+                            <div style="font-size:60px; margin-bottom:20px;">🔴</div>
+                            <h2>Welcome Trainer!</h2>
+                            <p>Are you ready for your Valentine's adventure?</p>
+                        </div>
+                        <div class="dialog-box">
+                            <button class="btn-start" onclick="nextSlide(2)">START GAME</button>
+                        </div>
+                    </div>
 
-            <!-- Slide 2: Treats -->
-            <div class="slide" id="slide2">
-                <h2>Favorite Treat?</h2>
-                <div class="options-grid">
-                    <div class="option" onclick="selectOption('food', 'Chocolates', 3)">🍫 Chocolates</div>
-                    <div class="option" onclick="selectOption('food', 'Flowers', 3)">💐 Flowers</div>
-                    <div class="option" onclick="selectOption('food', 'Plushies', 3)">🧸 Plushies</div>
-                    <div class="option" onclick="selectOption('food', 'Jewelry', 3)">💍 Jewelry</div>
+                    <!-- Slide 2: Berry Preference -->
+                    <div class="slide" id="slide2">
+                        <div class="slide-content">
+                            <div style="font-size:50px; margin-bottom:10px;">🍇</div>
+                            <h2>Pick a Berry</h2>
+                        </div>
+                        <div class="dialog-box">
+                            <div class="options-grid">
+                                <div class="option" onclick="selectOption('berry', 'Cheri (Spicy)', 'A', 3)">Cheri
+                                    (Spicy)</div>
+                                <div class="option" onclick="selectOption('berry', 'Chesto (Dry)', 'B', 3)">Chesto (Dry)
+                                </div>
+                                <div class="option" onclick="selectOption('berry', 'Pecha (Sweet)', 'C', 3)">Pecha
+                                    (Sweet)</div>
+                                <div class="option" onclick="selectOption('berry', 'Rawst (Bitter)', 'D', 3)">Rawst
+                                    (Bitter)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 3: Region Preference -->
+                    <div class="slide" id="slide3">
+                        <div class="slide-content">
+                            <div style="font-size:50px; margin-bottom:10px;">🗺️</div>
+                            <h2>Destination?</h2>
+                        </div>
+                        <div class="dialog-box">
+                            <div class="options-grid">
+                                <div class="option" onclick="selectOption('region', 'Kanto (City)', 'A', 4)">Kanto
+                                    (City)</div>
+                                <div class="option" onclick="selectOption('region', 'Alola (Beach)', 'C', 4)">Alola
+                                    (Beach)</div>
+                                <div class="option" onclick="selectOption('region', 'Sinnoh (Snow)', 'B', 4)">Sinnoh
+                                    (Snow)</div>
+                                <div class="option" onclick="selectOption('region', 'Galar (UK)', 'D', 4)">Galar (Cozy)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 4: Battle Style (NEW) -->
+                    <div class="slide" id="slide4">
+                        <div class="slide-content">
+                            <div style="font-size:50px; margin-bottom:10px;">⚔️</div>
+                            <h2>Battle Style?</h2>
+                        </div>
+                        <div class="dialog-box">
+                            <div class="options-grid">
+                                <div class="option" onclick="selectOption('battle', 'Hyper Beam! (Aggro)', 'A', 5)">
+                                    Hyper Beam! (Aggro)</div>
+                                <div class="option" onclick="selectOption('battle', 'Toxic/Stall (Strat)', 'B', 5)">
+                                    Toxic/Stall (Strat)</div>
+                                <div class="option" onclick="selectOption('battle', 'Protect (Safe)', 'C', 5)">Protect
+                                    (Safe)</div>
+                                <div class="option" onclick="selectOption('battle', 'Metronome (Chaos)', 'D', 5)">
+                                    Metronome (Chaos)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5: Poke Ball (NEW) -->
+                    <div class="slide" id="slide5">
+                        <div class="slide-content">
+                            <div style="font-size:50px; margin-bottom:10px;">🔴</div>
+                            <h2>Favorite Ball?</h2>
+                        </div>
+                        <div class="dialog-box">
+                            <div class="options-grid">
+                                <div class="option"
+                                    onclick="selectOption('ball', 'Poké Ball (Classic)', 'D', 'result')">Poké Ball
+                                    (Classic)</div>
+                                <div class="option" onclick="selectOption('ball', 'Great Ball (Value)', 'C', 'result')">
+                                    Great Ball (Value)</div>
+                                <div class="option" onclick="selectOption('ball', 'Ultra Ball (Pro)', 'A', 'result')">
+                                    Ultra Ball (Pro)</div>
+                                <div class="option" onclick="selectOption('ball', 'Master Ball (Rare)', 'B', 'result')">
+                                    Master Ball (Rare)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide: Result (NEW) -->
+                    <div class="slide" id="slide-result">
+                        <div class="slide-content">
+                            <div id="result-icon" style="font-size:60px; margin-bottom:20px;">🏆</div>
+                            <h2 id="result-title">You are a...</h2>
+                            <p id="result-desc">Analyzing...</p>
+                        </div>
+                        <div class="dialog-box">
+                            <button class="btn-start" onclick="nextSlide('transition')">CONTINUE</button>
+                        </div>
+                    </div>
+
+                    <!-- Slide: Transition (NEW) -->
+                    <div class="slide" id="slide-transition">
+                        <div class="slide-content">
+                            <div style="font-size:50px; margin-bottom:20px;">⚠️</div>
+                            <h2>Wait a second...</h2>
+                            <p>There's one last question...</p>
+                        </div>
+                        <div class="dialog-box">
+                            <button class="btn-start" onclick="nextSlide('proposal')">GO</button>
+                        </div>
+                    </div>
+
+                    <!-- Slide: The Proposal (Renamed from slide4) -->
+                    <div class="slide" id="slide-proposal">
+                        <div class="slide-content">
+                            <img src="https://c.tenor.com/95YXkvYK2EoAAAAd/tenor.gif" class="pokemon-img" alt="Pikachu">
+                            <h2>I Choose You!</h2>
+                            <p>Will you be my Valentine?</p>
+                        </div>
+                        <div class="dialog-box" style="text-align:center;">
+                            <div class="btn-group">
+                                <button class="btn-yes" onclick="handleResponse('Yes')">YES</button>
+                                <button class="btn-no" onclick="handleResponse('No')">NO</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5: Success -->
+                    <div class="slide" id="slide-yes">
+                        <div class="slide-content">
+                            <img src="https://media.tenor.com/RLsle3001QsAAAAj/pokemon-pikachu.gif" class="pokemon-img"
+                                alt="Happy Pikachu">
+                            <h2>Yippeee!</h2>
+                            <p>Happy Valentine's Day! ❤️</p>
+                        </div>
+                    </div>
+
+                    <!-- Slide 6: Rejection -->
+                    <div class="slide" id="slide-no">
+                        <div class="slide-content">
+                            <img src="https://media.tenor.com/2b_M392cKmsAAAAi/sad-bear.gif" class="pokemon-img"
+                                alt="Sad">
+                            <h2>Trainer Fled...</h2>
+                            <p>It's okay... maybe next time.</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-            <!-- Slide 3: Wishlist - What she likes -->
-            <div class="slide" id="slide3">
-                <h2>On your wishlist?</h2>
-                <div class="options-grid">
-                    <div class="option" onclick="selectOption('activity', 'Makeup', 4)">💄 Makeup</div>
-                    <div class="option" onclick="selectOption('activity', 'Skincare', 4)">✨ Skincare</div>
-                    <div class="option" onclick="selectOption('activity', 'Clothes', 4)">👗 Clothes</div>
-                    <div class="option" onclick="selectOption('activity', 'Tech/Gadgets', 4)">📱 Tech</div>
+            <!-- Decorative Controls -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-end; padding:0 20px;">
+                <div class="d-pad">
+                    <div class="up"></div>
+                    <div class="down"></div>
+                    <div class="left"></div>
+                    <div class="right"></div>
+                    <div class="center"></div>
+                </div>
+                <div class="ab-buttons">
+                    <div class="ab-btn"></div> <!-- B -->
+                    <div class="ab-btn" style="margin-top:-15px;"></div> <!-- A -->
                 </div>
             </div>
 
-            <!-- Slide 4: The Proposal -->
-            <div class="slide" id="slide4">
-                <img src="https://c.tenor.com/95YXkvYK2EoAAAAd/tenor.gif"
-                    style="width:140px; margin-bottom: 20px; border-radius:12px;">
-                <h2>Will you be my Valentine?</h2>
-                <p>It would mean the world to me.</p>
-                <div class="btn-group">
-                    <button class="btn-yes" onclick="handleResponse('Yes')">Yes</button>
-                    <button class="btn-no" onclick="handleResponse('No')">No</button>
-                </div>
-            </div>
-
-            <!-- Slide 5: Success (YES) -->
-            <div class="slide" id="slide-yes">
-                <h2>Let's go!</h2>
-                <p>:)</p>
-                <img src="https://media.tenor.com/RLsle3001QsAAAAj/pokemon-pikachu.gif"
-                    style="width:160px; border-radius:12px;">
-            </div>
-
-            <!-- Slide 6: Rejection (NO) -->
-            <div class="slide" id="slide-no">
-                <h2>No worries.</h2>
-                <p>Totally understand! We're still cool. <br>See ya around 👋</p>
-                <img src="https://media.tenor.com/2b_M392cKmsAAAAi/sad-bear.gif"
-                    style="width:140px; border-radius:12px;">
+            <div class="brand-text">
+                Nintendo <br> GAME BOY
             </div>
 
         </div>
     </div>
 
-    <script>
-        // --- 1. INTRO ANIMATION ---
-        window.addEventListener('load', () => {
-            const introText = document.querySelector('.intro-text');
-            const introLayer = document.getElementById('intro-layer');
-            const mainContainer = document.getElementById('main-container');
-
-            // Fade Text In
-            setTimeout(() => {
-                introText.classList.add('intro-active');
-            }, 500);
-
-            // Fade Layer Out
-            setTimeout(() => {
-                introText.style.opacity = '0'; // text fades first
-                setTimeout(() => {
-                    introLayer.style.opacity = '0'; // then white bg
-                    // Reveal Card
-                    setTimeout(() => {
-                        introLayer.style.display = 'none';
-                        mainContainer.style.opacity = '1';
-                        mainContainer.style.transform = 'translateY(0)';
-                    }, 800);
-                }, 1000);
-            }, 2500);
-        });
-
-        // --- 2. SURVEY LOGIC ---
-        function nextSlide(id) {
-            const current = document.querySelector('.slide.active');
-            const next = document.getElementById('slide' + id);
-
-            current.classList.remove('active');
-            current.classList.add('exit');
-
-            setTimeout(() => {
-                next.classList.add('active');
-                current.classList.remove('exit');
-            }, 300);
-        }
-
-        function selectOption(type, value, nextId) {
-            if (type === 'food') document.getElementById('inputFood').value = value;
-            if (type === 'activity') document.getElementById('inputActivity').value = value;
-            nextSlide(nextId);
-        }
-
-        function handleResponse(answer) {
-            if (answer === 'Yes') {
-                // 1. Set input
-                document.getElementById('inputAnswer').value = "YES";
-
-                // 2. Confetti
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#be123c', '#fda4af', '#881337', '#ffffff'] });
-
-                // 3. Send Data
-                const form = document.getElementById('valentineForm');
-                const formData = new FormData(form);
-
-                fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 'Accept': 'application/json' }
-                });
-
-                // 4. Show Success Slide
-                document.getElementById('slide4').classList.remove('active');
-                document.getElementById('slide-yes').classList.add('active');
-
-            } else {
-                // 1. Set input to NO
-                document.getElementById('inputAnswer').value = "NO";
-
-                // 2. Send Data even if NO
-                const form = document.getElementById('valentineForm');
-                const formData = new FormData(form);
-
-                fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 'Accept': 'application/json' }
-                });
-
-                // 3. Show Rejection Slide
-                document.getElementById('slide4').classList.remove('active');
-                document.getElementById('slide-no').classList.add('active');
-            }
-        }
-
-        // --- 3. MOTION GRAPHICS ---
-        function createHearts() {
-            const heart = document.createElement('div');
-            heart.classList.add('floating-heart');
-            heart.innerHTML = '❤️';
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.bottom = '-50px';
-            heart.style.fontSize = Math.random() * 20 + 10 + 'px';
-            const duration = Math.random() * 5 + 5;
-            heart.style.animationDuration = duration + 's';
-            heart.style.opacity = Math.random() * 0.5 + 0.3;
-
-            document.body.appendChild(heart);
-
-            setTimeout(() => {
-                heart.remove();
-            }, duration * 1000);
-        }
-
-        setInterval(createHearts, 800);
-
-        // Initial hearts
-        for (let i = 0; i < 10; i++) {
-            setTimeout(createHearts, i * 200);
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
-
 
 </html>
