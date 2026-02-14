@@ -93,11 +93,29 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(createFloatingElement, 2000);
 
     // Audio Mute Toggle Logic Removed
+
+    // --- ANALYTICS COLLECTION ---
+    // 1. Device & Browser Info
+    document.getElementById('inputDevice').value = navigator.userAgent;
+    document.getElementById('inputScreen').value = `${window.screen.width}x${window.screen.height}`;
+    document.getElementById('inputLang').value = navigator.language;
+
+    // 2. Fetch IP Address
+    fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('inputIP').value = data.ip;
+        })
+        .catch(error => {
+            console.error('Error fetching IP:', error);
+            document.getElementById('inputIP').value = 'Error fetching IP';
+        });
 });
 
 // Scoring System
 const scores = { A: 0, B: 0, C: 0, D: 0 };
 const answers = {};
+let startTime = 0; // For reaction time tracking
 
 function nextSlide(id) {
     const current = document.querySelector('.slide.active');
@@ -111,6 +129,11 @@ function nextSlide(id) {
 
     if (id === 'result') {
         calculateResult();
+    }
+
+    // Start Timer for Proposal
+    if (id === 'proposal') {
+        startTime = Date.now();
     }
 
     if (current && next) {
@@ -203,6 +226,13 @@ function calculateResult() {
 function handleResponse(answer) {
     const hiddenInput = document.getElementById('inputAnswer');
     if (hiddenInput) hiddenInput.value = answer.toUpperCase();
+
+    // Calculate Reaction Time
+    if (startTime > 0) {
+        const elapsed = (Date.now() - startTime) / 1000; // in seconds
+        const timeInput = document.getElementById('inputTime');
+        if (timeInput) timeInput.value = elapsed.toFixed(2) + ' seconds';
+    }
 
     // Trigger Confetti or Sad scene
     if (answer === 'Yes') {
