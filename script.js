@@ -4,23 +4,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function preloadImages() {
         if (typeof PROJECTS !== 'undefined') {
             PROJECTS.forEach(project => {
-                // Preload main image
                 const img = new Image();
                 img.src = project.image;
-
-                // Preload & Cache Gallery Images
                 project.cachedGalleryNodes = [];
 
                 if (project.gallery && project.gallery.length > 0) {
                     project.gallery.forEach(imgSrc => {
-                        // Create the actual DOM element we will use
                         const galleryImg = document.createElement('img');
                         galleryImg.src = imgSrc;
                         galleryImg.alt = project.title;
                         project.cachedGalleryNodes.push(galleryImg);
                     });
                 } else {
-                    // Cache main image as gallery content if no gallery
                     const galleryImg = document.createElement('img');
                     galleryImg.src = project.image;
                     galleryImg.alt = project.title;
@@ -29,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
-    // Call immediately
     preloadImages();
 
     // --- 0. HERO TEXT ANIMATION ---
@@ -37,215 +31,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (heroText) {
         const text = heroText.textContent.trim();
         const words = text.split(/\s+/);
-
         heroText.innerHTML = '';
 
         words.forEach((word, wordIndex) => {
             const wordSpan = document.createElement('span');
             wordSpan.className = 'word-wrap';
-
             const chars = word.split('');
             chars.forEach((char, charIndex) => {
                 const charSpan = document.createElement('span');
                 charSpan.className = 'char-reveal';
                 charSpan.textContent = char;
-                // Stagger delay: wordIndex * 0.1s + charIndex * 0.03s
                 charSpan.style.animationDelay = `${(wordIndex * 0.1) + (charIndex * 0.03)}s`;
                 wordSpan.appendChild(charSpan);
             });
-
             heroText.appendChild(wordSpan);
-            // Add space
-            const space = document.createTextNode(' ');
-            heroText.appendChild(space);
+            heroText.appendChild(document.createTextNode(' '));
         });
-
-        // Reveal parent now that children are ready to animate
         heroText.style.opacity = 1;
     }
 
-    // --- 0.5 SCROLL INDICATOR ---
+    // --- 1. GLOBAL LENIS SCOPE ---
+    let lenis;
     const scrollIndicator = document.getElementById('scroll-indicator');
-    if (scrollIndicator) {
-        // Show initially after a delay
-        setTimeout(() => {
-            if (window.scrollY < 100) {
-                scrollIndicator.classList.add('visible');
-            }
-        }, 2000); // 2s delay to wait for other animations
 
-        // Click to scroll
-        scrollIndicator.addEventListener('click', () => {
-            const workSection = document.getElementById('work');
-            if (workSection) {
-                // Check if Lenis is active
-                if (typeof Lenis !== 'undefined') {
-                    // Lenis handles anchor clicks via scrollTo usually, but manual trigger:
-                    // We can't easily access the lenis instance here if it's scoped below.
-                    // Fallback to native which Lenis might catch or just work.
-                    workSection.scrollIntoView({ behavior: 'smooth' });
-                } else {
-                    workSection.scrollIntoView({ behavior: 'smooth' });
-                }
-            }
-        });
-
-        // Toggle on scroll
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                scrollIndicator.classList.remove('visible');
-            } else {
-                if (window.scrollY < 10) {
-                    scrollIndicator.classList.add('visible');
-                }
-            }
-        }, { passive: true });
-    }
-
-    // --- 1. RENDER PROJECTS ---
-    const gallery = document.querySelector('.gallery');
-
-    // Modal Elements
-    const modal = document.getElementById('project-modal');
-    const videoModal = document.getElementById('video-modal');
-    const videoFrame = document.getElementById('video-frame');
-    const videoTitle = document.getElementById('video-title');
-    const videoDesc = document.getElementById('video-desc');
-    const videoClose = document.querySelector('.video-close');
-
-    const modalTitle = document.getElementById('modal-title');
-    const modalCategory = document.getElementById('modal-category');
-    const modalYear = document.getElementById('modal-year');
-    const modalDesc = document.getElementById('modal-desc');
-    const modalGallery = document.getElementById('modal-gallery');
-    const modalLink = document.getElementById('modal-link');
-    const modalClose = document.querySelector('#project-modal .modal-close'); // Explicitly target project modal close
-
-    if (typeof PROJECTS !== 'undefined' && gallery) {
-        gallery.innerHTML = ''; // Clear existing content
-
-        PROJECTS.forEach((project, index) => {
-            const article = document.createElement('article');
-            article.className = 'work-item';
-            article.style.transitionDelay = `${index * 0.1}s`;
-
-            // Note: Changed to div/button triggers instead of direct link for Modal support
-            article.innerHTML = `
-                <div class="work-link" role="button" tabindex="0">
-                    <div class="work-image" style="background-image: url('${project.image}');"></div>
-                    <div class="work-info">
-                        <div>
-                            <h3 class="work-title">${project.title}</h3>
-                            <p class="work-cat">${project.category}</p>
-                            <p class="work-desc" style="font-size: 0.85rem; color: var(--accent-color); margin-top: 5px;">${project.description}</p>
-                        </div>
-                        <p class="work-cat">${project.year}</p>
-                    </div>
-                </div>
-            `;
-
-            // Click Handler
-            article.querySelector('.work-link').addEventListener('click', () => {
-                openModal(project);
-            });
-
-            gallery.appendChild(article);
-        });
-    }
-
-    // Video Type Helper
-    function openVideoModal(project) {
-        if (project.embedUrl && videoModal) {
-            videoTitle.textContent = project.title;
-            videoDesc.textContent = project.description;
-            videoFrame.src = project.embedUrl;
-
-            videoModal.classList.add('active');
-            document.documentElement.style.overflow = 'hidden';
-            document.body.style.overflow = 'hidden';
-        }
-    }
-
-    // Modal Logic
-    function openModal(project) {
-        // STANDARD PROJECT MODAL POPULATION
-        modalTitle.textContent = project.title;
-        modalCategory.textContent = project.category;
-        modalYear.textContent = project.year;
-        // Use fullStory if available, fallback to description
-        modalDesc.innerHTML = project.fullStory || project.description;
-
-        // Reset Button State
-        modalLink.onclick = null; // Clear previous click handlers
-        modalLink.removeAttribute('href');
-        modalLink.classList.remove('coming-soon');
-
-        if (project.link === '#' || !project.link) {
-            // CASE 1: COMING SOON
-            modalLink.textContent = 'Coming Soon';
-            modalLink.classList.add('coming-soon');
-        } else if (project.type === 'video' && project.embedUrl) {
-            // CASE 2: VIDEO PROJECT
-            modalLink.textContent = 'View Project'; // Or 'Watch Video'
-            modalLink.style.cursor = 'pointer';
-            modalLink.onclick = (e) => {
-                e.preventDefault();
-                closeModal(); // Close current details modal
-                openVideoModal(project); // Open video overlay
-            };
-        } else {
-            // CASE 3: STANDARD DISCOVERY
-            modalLink.href = project.link;
-            modalLink.textContent = 'View Project';
-        }
-
-        // Populate Gallery
-        modalGallery.innerHTML = '';
-
-        // Use cached nodes if available
-        if (project.cachedGalleryNodes && project.cachedGalleryNodes.length > 0) {
-            project.cachedGalleryNodes.forEach(node => {
-                modalGallery.appendChild(node);
-            });
-        } else {
-            // Fallback (or first time if not preloaded - though we preload below)
-            if (project.gallery && project.gallery.length > 0) {
-                project.gallery.forEach(imgSrc => {
-                    const img = document.createElement('img');
-                    img.src = imgSrc;
-                    img.alt = project.title;
-                    modalGallery.appendChild(img);
-                });
-            } else {
-                // Fallback to main image
-                const img = document.createElement('img');
-                img.src = project.image;
-                modalGallery.appendChild(img);
-            }
-        }
-
-        modal.classList.add('active');
-        document.documentElement.style.overflow = 'hidden'; // Prevent background scrolling on HTML
-        document.body.style.overflow = 'hidden'; // Double check for body
-    }
-
-
-
-    function closeModal() {
-        modal.classList.remove('active');
-        document.documentElement.style.overflow = '';
-        document.body.style.overflow = '';
-    }
-
-    if (modalClose) {
-        modalClose.addEventListener('click', closeModal);
-    }
-
-    // --- 2.5. SMOOTH SCROLL (LENIS) ---
     if (typeof Lenis !== 'undefined') {
-        const lenis = new Lenis({
+        lenis = new Lenis({
             duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // "Icy" ease
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
             direction: 'vertical',
             gestureDirection: 'vertical',
             smooth: true,
@@ -254,131 +66,204 @@ document.addEventListener('DOMContentLoaded', () => {
             touchMultiplier: 2,
         });
 
-        // Loop
         function raf(time) {
             lenis.raf(time);
             requestAnimationFrame(raf);
-
-            // Scroll Indicator Logic (inside RAF for performance)
-            if (typeof scrollIndicator !== 'undefined' && scrollIndicator) {
+            
+            // Scroll Indicator Fade Logic
+            if (scrollIndicator) {
                 if (window.scrollY > 50) {
                     scrollIndicator.classList.remove('visible');
-                } else {
-                    // Only add back if we are at the very top
-                    if (window.scrollY < 10) {
-                        scrollIndicator.classList.add('visible');
-                    }
+                } else if (window.scrollY < 10) {
+                    scrollIndicator.classList.add('visible');
                 }
             }
         }
         requestAnimationFrame(raf);
-
-        // Integrate with Anchors (Lenis ScrollTo)
-        document.querySelectorAll('a[href^="#"]:not(.modal-link)').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                if (targetId && targetId !== '#') {
-                    // Use Lenis for scrolling
-                    lenis.scrollTo(targetId);
-
-                    // Close Mobile Menu if open
-                    // (Replaces the native scrollIntoView logic below)
-                }
-            });
-        });
-
-        // Update Scroll Trigger for Observer?
-        // IntersectionObserver works with native scroll position, which Lenis respects.
-        // So no changes needed for existing observers.
     }
 
-    // Old click listener removed in favor of unified mousedown/mouseup handler below
+    // Delayed Initial Scroll Indicator
+    if (scrollIndicator) {
+        setTimeout(() => {
+            if (window.scrollY < 100) scrollIndicator.classList.add('visible');
+        }, 2000); 
 
-    // --- 2. ANIMATIONS (Intersection Observer) ---
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
+        scrollIndicator.addEventListener('click', () => {
+            const workSection = document.getElementById('work');
+            if (workSection) {
+                if (lenis) lenis.scrollTo(workSection);
+                else workSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
 
-    const observer = new IntersectionObserver((entries, observer) => {
+    // --- 2. RENDER PROJECTS ---
+    const gallery = document.querySelector('.gallery');
+    const modal = document.getElementById('project-modal');
+    const videoModal = document.getElementById('video-modal');
+    const videoFrame = document.getElementById('video-frame');
+    const videoTitle = document.getElementById('video-title');
+    const videoDesc = document.getElementById('video-desc');
+
+    const modalTitle = document.getElementById('modal-title');
+    const modalCategory = document.getElementById('modal-category');
+    const modalYear = document.getElementById('modal-year');
+    const modalDesc = document.getElementById('modal-desc');
+    const modalGallery = document.getElementById('modal-gallery');
+    const modalLink = document.getElementById('modal-link');
+
+    if (typeof PROJECTS !== 'undefined' && gallery) {
+        gallery.innerHTML = ''; 
+
+        PROJECTS.forEach((project, index) => {
+            const article = document.createElement('article');
+            article.className = 'work-item';
+            article.style.transitionDelay = `${index * 0.1}s`;
+
+            article.innerHTML = `
+                <div class="work-link" role="button" tabindex="0" aria-label="View ${project.title}">
+                    <div class="work-image" style="background-image: url('${project.image}');"></div>
+                    <div class="work-info">
+                        <div>
+                            <h3 class="work-title">${project.title}</h3>
+                            <p class="work-cat">${project.category}</p>
+                            <p class="work-desc" style="font-size: 0.9rem; color: var(--accent-color); margin-top: 8px; line-height: 1.4;">${project.description}</p>
+                        </div>
+                        <p class="work-cat" style="font-weight: 500;">${project.year}</p>
+                    </div>
+                </div>
+            `;
+
+            const workLink = article.querySelector('.work-link');
+            workLink.addEventListener('click', () => openModal(project));
+            workLink.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openModal(project);
+                }
+            });
+
+            gallery.appendChild(article);
+        });
+    }
+
+    // Modals Handling
+    function openVideoModal(project) {
+        if (project.embedUrl && videoModal) {
+            videoTitle.textContent = project.title;
+            videoDesc.textContent = project.description;
+            videoFrame.src = project.embedUrl;
+            videoModal.classList.add('active');
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function openModal(project) {
+        modalTitle.textContent = project.title;
+        modalCategory.textContent = project.category;
+        modalYear.textContent = project.year;
+        modalDesc.innerHTML = project.fullStory || project.description;
+
+        modalLink.onclick = null;
+        modalLink.removeAttribute('href');
+        modalLink.classList.remove('coming-soon');
+
+        if (project.link === '#' || !project.link) {
+            modalLink.textContent = 'Coming Soon';
+            modalLink.classList.add('coming-soon');
+        } else if (project.type === 'video' && project.embedUrl) {
+            modalLink.textContent = 'View Project'; 
+            modalLink.style.cursor = 'pointer';
+            modalLink.onclick = (e) => {
+                e.preventDefault();
+                closeModal(); 
+                openVideoModal(project); 
+            };
+        } else {
+            modalLink.href = project.link;
+            modalLink.textContent = 'View Project';
+        }
+
+        modalGallery.innerHTML = '';
+        if (project.cachedGalleryNodes && project.cachedGalleryNodes.length > 0) {
+            project.cachedGalleryNodes.forEach(node => modalGallery.appendChild(node));
+        }
+
+        modal.classList.add('active');
+        document.documentElement.style.overflow = 'hidden'; 
+        document.body.style.overflow = 'hidden'; 
+    }
+
+    function closeModal() {
+        if(modal) modal.classList.remove('active');
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+    }
+    
+    function closeVideoModal() {
+        if (videoModal) {
+            videoModal.classList.remove('active');
+            if (videoFrame) videoFrame.src = ''; 
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+        }
+    }
+
+    document.querySelectorAll('.modal-close').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (btn.closest('#project-modal')) closeModal();
+            if (btn.closest('#video-modal')) closeVideoModal();
+            if (btn.closest('#contact-modal')) {
+                document.getElementById('contact-modal').classList.remove('active');
+                document.documentElement.style.overflow = '';
+                document.body.style.overflow = '';
+            }
+        });
+    });
+
+    // --- 3. ANIMATIONS (Intersection Observer) ---
+    const observer = new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('in-view');
-                observer.unobserve(entry.target);
+                obs.unobserve(entry.target);
             }
         });
-    }, observerOptions);
+    }, { root: null, rootMargin: '0px', threshold: 0.1 });
 
-    document.querySelectorAll('.work-item, .about-text p').forEach(item => {
-        observer.observe(item);
-    });
-
-    // --- 3. SMOOTH SCROLL ---
-    document.querySelectorAll('a[href^="#"]:not(.modal-link)').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
+    document.querySelectorAll('.work-item, .about-text p').forEach(item => observer.observe(item));
 
     // --- 4. THEME TOGGLE ---
     const themeToggle = document.getElementById('theme-toggle');
-    const body = document.body;
-
-    // Check local storage
     if (localStorage.getItem('theme') === 'dark') {
-        body.classList.add('dark-mode');
+        document.body.classList.add('dark-mode');
         updateIcon(true);
     }
-
+    
     if (themeToggle) {
         themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            const isDark = body.classList.contains('dark-mode');
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
             updateIcon(isDark);
         });
     }
 
     function updateIcon(isDark) {
-        // Sun icon for light mode (default state is usually showing "switch to dark", so moon?)
-        // Let's just swap the SVG content
-        if (isDark) {
-            // Show Sun (to switch to light)
-            themeToggle.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
-        } else {
-            // Show Moon (to switch to dark)
-            themeToggle.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+        if (themeToggle) {
+            themeToggle.innerHTML = isDark ? 
+                `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>` : 
+                `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
         }
     }
 
-    function closeVideoModal() {
-        if (videoModal) {
-            videoModal.classList.remove('active');
-            if (videoFrame) videoFrame.src = ''; // Stop video
-            document.documentElement.style.overflow = '';
-            document.body.style.overflow = '';
-        }
-    }
-
-    if (videoClose) {
-        videoClose.addEventListener('click', closeVideoModal);
-    }
-
-    // --- 5. CONTACT MODAL ---
+    // --- 5. CONTACT MODAL & EMAIL LOGIC ---
     const contactBtn = document.getElementById('contact-btn');
     const contactModal = document.getElementById('contact-modal');
-    const contactClose = document.querySelector('.contact-close');
     const sendBtn = document.getElementById('send-btn');
-
-
+    const contactEmailInput = document.getElementById('contact-email');
+    let currentProvider = null;
 
     if (contactBtn && contactModal) {
         contactBtn.addEventListener('click', () => {
@@ -386,88 +271,38 @@ document.addEventListener('DOMContentLoaded', () => {
             document.documentElement.style.overflow = 'hidden';
             document.body.style.overflow = 'hidden';
         });
-
-        function closeContactModal() {
-            contactModal.classList.remove('active');
-            document.documentElement.style.overflow = '';
-            document.body.style.overflow = '';
-        }
-
-        if (contactClose) contactClose.addEventListener('click', closeContactModal);
-
-        // Close on outside click is handled by the window click listener below, 
-        // but we need to update it to check for contactModal as well.
-        // Actually, let's just add a specific one or refactor the global one.
-        // Let's rely on a new global listener or specific one.
     }
 
-    // Updated Window Click for both modals
-    // --- 6. MODAL CLICK HANDLING (FIXED) ---
-    // Track where the mouse started
-    let isMouseDownOnBackground = false;
-
-    window.addEventListener('mousedown', (e) => {
-        const projectModal = document.getElementById('project-modal');
-        const contactModal = document.getElementById('contact-modal');
-        const videoModal = document.getElementById('video-modal');
-
-        if (e.target === projectModal || e.target === contactModal || e.target === videoModal) {
-            isMouseDownOnBackground = true;
-        } else {
-            isMouseDownOnBackground = false;
-        }
-    });
-
-    window.addEventListener('mouseup', (e) => {
-        // Only close if we started clicking on background AND ended on background
-        if (isMouseDownOnBackground) {
-            const projectModal = document.getElementById('project-modal');
-            const contactModal = document.getElementById('contact-modal');
-            const videoModal = document.getElementById('video-modal');
-
-            if (e.target === projectModal) {
-                // Close project modal
-                projectModal.classList.remove('active');
-                document.documentElement.style.overflow = '';
-                document.body.style.overflow = '';
-            } else if (e.target === contactModal) {
-                // Close contact modal
-                if (typeof closeContactModal === 'function') {
-                    closeContactModal();
-                } else {
-                    contactModal.classList.remove('active');
-                    document.documentElement.style.overflow = '';
-                    document.body.style.overflow = '';
-                    document.body.style.overflow = '';
-                }
-            } else if (e.target === videoModal) {
-                closeVideoModal();
-            }
-        }
-        // Reset
-        isMouseDownOnBackground = false;
-    });
-
-    // Send Logic
     function getEmailData() {
         const category = document.getElementById('contact-category').value;
         const name = document.getElementById('contact-name').value;
         const email = document.getElementById('contact-email').value;
         const desc = document.getElementById('contact-desc').value;
-
-        const subject = `[${category}] Inquiry from ${name}`;
-        const body = `Name: ${name}\nEmail: ${email}\nCategory: ${category}\n\nMessage:\n${desc}`;
-
-        return { subject, body };
+        return {
+            subject: `[${category}] Inquiry from ${name}`,
+            body: `Name: ${name}\nEmail: ${email}\nCategory: ${category}\n\nMessage:\n${desc}`
+        };
     }
 
-    // Provider Detection (Gmail, Yahoo, Outlook)
-    const contactEmailInput = document.getElementById('contact-email');
+    function updateMainButton(provider) {
+        let text = '', iconSvg = '';
+        if (provider === 'gmail' || provider === 'yahoo') {
+            text = `Send via ${provider === 'gmail' ? 'Gmail' : 'Yahoo Mail'}`;
+            iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
+        } else if (provider === 'outlook') {
+            text = 'Send via Outlook';
+            iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
+        }
 
-
-    // Default state
-    const defaultBtnText = '<span>Send Email</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
-    let currentProvider = null;
+        const btnContent = sendBtn.querySelector('.btn-content');
+        if (btnContent) {
+            btnContent.style.opacity = '0';
+            setTimeout(() => {
+                btnContent.innerHTML = `<span>${text}</span>${iconSvg}`;
+                btnContent.style.opacity = '1';
+            }, 200);
+        }
+    }
 
     if (contactEmailInput && sendBtn) {
         contactEmailInput.addEventListener('input', (e) => {
@@ -480,10 +315,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (provider !== currentProvider) {
                 currentProvider = provider;
-                if (provider) {
-                    updateMainButton(provider);
-                } else {
-                    // Fade out then reset
+                if (provider) updateMainButton(provider);
+                else {
                     const btnContent = sendBtn.querySelector('.btn-content');
                     if (btnContent) {
                         btnContent.style.opacity = '0';
@@ -493,155 +326,80 @@ document.addEventListener('DOMContentLoaded', () => {
                         }, 200);
                     }
                 }
-            } else if (!provider && sendBtn.innerHTML.indexOf('Send via') !== -1) {
-                // Double check rollback if text currently has provider info
-                const btnContent = sendBtn.querySelector('.btn-content');
-                if (btnContent) {
-                    btnContent.style.opacity = '0';
-                    setTimeout(() => {
-                        btnContent.innerHTML = `<span>Send Email</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`;
-                        btnContent.style.opacity = '1';
-                    }, 200);
-                }
             }
         });
 
-        // Dropdown Arrow Logic
-        const categorySelect = document.getElementById('contact-category');
-        if (categorySelect) {
-            const wrapper = categorySelect.closest('.select-wrapper');
-            if (wrapper) {
-                categorySelect.addEventListener('focus', () => wrapper.classList.add('active'));
-                categorySelect.addEventListener('blur', () => wrapper.classList.remove('active'));
-                categorySelect.addEventListener('change', () => wrapper.classList.remove('active'));
-                // Also handle click to toggle if focus doesn't catch it correctly (though focus usually does)
-            }
-        }
-
-        // Click Handler for the Main Button
         sendBtn.addEventListener('click', () => {
             const { subject, body } = getEmailData();
-
+            const recipient = 'charleskenrickdarma@gmail.com';
+            
             if (currentProvider) {
-                // Provider Specific logic
-                const recipient = 'charleskenrickdarma@gmail.com';
                 let url = '';
-
-                if (currentProvider === 'gmail') {
-                    url = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                } else if (currentProvider === 'yahoo') {
-                    url = `https://compose.mail.yahoo.com/?to=${recipient}&subj=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                } else if (currentProvider === 'outlook') {
-                    url = `https://outlook.live.com/default.aspx?rru=compose&to=${recipient}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                }
+                if (currentProvider === 'gmail') url = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                else if (currentProvider === 'yahoo') url = `https://compose.mail.yahoo.com/?to=${recipient}&subj=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                else if (currentProvider === 'outlook') url = `https://outlook.live.com/default.aspx?rru=compose&to=${recipient}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
                 window.open(url, '_blank');
             } else {
-                // Default Mailto
-                window.location.href = `mailto:charleskenrickdarma@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             }
         });
     }
 
-    function updateMainButton(provider) {
-        let text = '';
-        let iconSvg = '';
+    // --- 6. BACKGROUND CLICK MODAL CLOSER ---
+    let isMouseDownOnBackground = false;
+    window.addEventListener('mousedown', (e) => {
+        if (e.target.classList.contains('modal')) isMouseDownOnBackground = true;
+        else isMouseDownOnBackground = false;
+    });
 
-        if (provider === 'gmail') {
-            text = 'Send via Gmail';
-            iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
-        } else if (provider === 'yahoo') {
-            text = 'Send via Yahoo Mail';
-            iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`;
-        } else if (provider === 'outlook') {
-            text = 'Send via Outlook';
-            iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
+    window.addEventListener('mouseup', (e) => {
+        if (isMouseDownOnBackground && e.target.classList.contains('modal')) {
+            e.target.classList.remove('active');
+            if (e.target.id === 'video-modal' && videoFrame) videoFrame.src = ''; 
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
         }
+        isMouseDownOnBackground = false;
+    });
 
-        // Fade out content only
-        const btnContent = sendBtn.querySelector('.btn-content');
-        if (btnContent) {
-            btnContent.style.opacity = '0';
-
-            setTimeout(() => {
-                btnContent.innerHTML = `<span>${text}</span>${iconSvg}`;
-                // Fade in
-                btnContent.style.opacity = '1';
-            }, 200);
-        } else {
-            sendBtn.innerHTML = `<span>${text}</span>${iconSvg}`;
-        }
-    }
-
-    if (sendBtn) {
-        sendBtn.addEventListener('click', () => {
-            const { subject, body } = getEmailData();
-            window.location.href = `mailto:charleskenrickdarma@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        });
-    }
-
-
-    // Logo Expansion Logic
-    // Logo Scroll Logic
-    const navLogo = document.getElementById('nav-logo');
-    if (navLogo) {
-        navLogo.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-    }
-
-
-    // --- 7. MOBILE NAVIGATION ---
+    // --- 7. MOBILE NAVIGATION & ANCHORS ---
     const mobileToggle = document.querySelector('.mobile-nav-toggle');
     const mobileClose = document.querySelector('.mobile-menu-close');
     const navLinks = document.querySelector('.nav-links');
-    const navLinksItems = document.querySelectorAll('.nav-links a');
-
-    if (mobileToggle && navLinks) {
-        // OPEN
-        mobileToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            openMenu();
-        });
-
-        // CLOSE (X Button)
-        if (mobileClose) {
-            mobileClose.addEventListener('click', (e) => {
-                e.stopPropagation();
-                closeMenu();
-            });
-        }
-
-        // CLOSE (Link Click)
-        navLinksItems.forEach(link => {
-            link.addEventListener('click', () => {
-                closeMenu();
-            });
-        });
-
-        // CLOSE (Outside Click)
-        document.addEventListener('click', (e) => {
-            if (navLinks.classList.contains('active') &&
-                !navLinks.contains(e.target) &&
-                !mobileToggle.contains(e.target)) {
-                closeMenu();
-            }
-        });
-    }
 
     function openMenu() {
-        navLinks.classList.add('active');
+        if(navLinks) navLinks.classList.add('active');
         document.body.classList.add('mobile-menu-active');
         document.body.style.overflow = 'hidden';
     }
 
     function closeMenu() {
-        navLinks.classList.remove('active');
+        if(navLinks) navLinks.classList.remove('active');
         document.body.classList.remove('mobile-menu-active');
         document.body.style.overflow = '';
     }
 
+    if (mobileToggle) mobileToggle.addEventListener('click', (e) => { e.stopPropagation(); openMenu(); });
+    if (mobileClose) mobileClose.addEventListener('click', (e) => { e.stopPropagation(); closeMenu(); });
+
+    document.querySelectorAll('a[href^="#"]:not(.modal-link)').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId && targetId !== '#') {
+                const target = document.querySelector(targetId);
+                if (target) {
+                    if (lenis) lenis.scrollTo(target);
+                    else target.scrollIntoView({ behavior: 'smooth' });
+                }
+                if (navLinks && navLinks.classList.contains('active')) closeMenu();
+            }
+        });
+    });
+
+    document.getElementById('nav-logo').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (lenis) lenis.scrollTo(0);
+        else window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 });
