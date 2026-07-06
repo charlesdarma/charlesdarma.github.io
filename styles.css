@@ -133,7 +133,7 @@ h1, h2, h3, h4 {
     font-weight: 400;
 }
 
-/* --- HERO ANIMATION --- */
+/* --- HERO ANIMATION (MOTION GRAPHICS STYLE) --- */
 .intro-text {
     font-size: clamp(2rem, 5vw, 4rem);
     line-height: 1.2;
