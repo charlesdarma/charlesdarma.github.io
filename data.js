@@ -6,12 +6,7 @@ const PROJECTS = [
         description: "Head of Production, Prologue Video Editor, and Supporting Cast for this OSIS 'Bela Negara' musical drama.",
         fullStory: "A musical drama created for the school's OSIS 'Bela Negara' program. In addition to playing a supporting role on stage, I served as the Head of Production, where I coordinated with the livecam team to manage the live feed. I also produced and edited the prologue video that introduced the musical.",
         image: "assets/sepatuuntukkita_1.png",
-        gallery: [
-            "assets/sepatuuntukkita_1.png", 
-            "assets/sepatuuntukkita_2.png", 
-            "assets/sepatuuntukkita_3.png", 
-            "assets/sepatuuntukkita_4.png"
-        ],
+        gallery: ["assets/sepatuuntukkita_1.png", "assets/sepatuuntukkita_2.png", "assets/sepatuuntukkita_3.png", "assets/sepatuuntukkita_4.png"],
         link: "https://drive.google.com/file/d/1xXDWY5wuGB_BL7nLNM2BTrXHSXb9cENc/view?usp=sharing",
         type: "video",
         embedUrl: "https://drive.google.com/file/d/1xXDWY5wuGB_BL7nLNM2BTrXHSXb9cENc/preview"
@@ -23,11 +18,7 @@ const PROJECTS = [
         description: "A short recap video documenting a class visit to the Panti Werdahana nursing home.",
         fullStory: "This video recap documents a class community visit to Panti Werdahana. Over the course of a few hours, we spent time interacting with the residents. The video was edited to capture these moments and summarize the experience for the class.",
         image: "assets/recappanti_1.png",
-        gallery: [
-            "assets/recappanti_1.png", 
-            "assets/recappanti_2.png", 
-            "assets/recappanti_3.png"
-        ],
+        gallery: ["assets/recappanti_1.png", "assets/recappanti_2.png", "assets/recappanti_3.png"],
         link: "https://drive.google.com/file/d/1TKT3E9Z4tC-Z_aSpVlxjXypYKYgjQgrS/view?usp=sharing",
         type: "video",
         embedUrl: "https://drive.google.com/file/d/1TKT3E9Z4tC-Z_aSpVlxjXypYKYgjQgrS/preview"
