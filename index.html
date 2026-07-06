@@ -10,9 +10,10 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Lenis for Smooth Scrolling -->
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.39/dist/lenis.min.js"></script>
 
     <!-- CSS -->
     <link rel="stylesheet" href="styles.css">
@@ -22,23 +23,24 @@
 
     <nav>
         <a href="#" id="nav-logo" class="logo">CKD.</a>
+        
         <button class="mobile-nav-toggle" aria-label="Toggle Menu" aria-expanded="false">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="3" y1="12" x2="21" y2="12"></line>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
                 <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
         </button>
-        <div class="nav-links" id="nav-links" style="align-items: center;">
-            <button class="mobile-menu-close modal-close"><span>&times;</span></button>
+
+        <div class="nav-links" id="nav-links">
+            <button class="mobile-menu-close" aria-label="Close Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
             <a href="#work">Work</a>
             <a href="#about">About</a>
             <a href="#contact">Contact</a>
             <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">
-                <!-- Default Moon Icon (Switch to Dark) -->
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
             </button>
@@ -60,13 +62,12 @@
 
     <section id="work">
         <div class="section-title">Selected Works</div>
-
         <div class="gallery">
             <!-- Items are rendered via script.js -->
         </div>
     </section>
 
-    <section id="about" style="padding-top: 50px; padding-bottom: 50px;">
+    <section id="about">
         <div class="section-title">About Me</div>
         <div class="about-container">
             <div class="about-text">
@@ -85,7 +86,6 @@
                 </p>
             </div>
         </div>
-
     </section>
 
     <section id="contact" class="contact">
@@ -98,19 +98,15 @@
         <div class="footer-content">
             <div class="social-links">
                 <a href="https://instagram.com/charlesknd_" target="_blank" aria-label="Instagram">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                         <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                         <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                     </svg>
                 </a>
                 <a href="https://github.com/charlesdarma" target="_blank" aria-label="GitHub">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path
-                            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
-                        </path>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
                     </svg>
                 </a>
             </div>
@@ -124,7 +120,9 @@
     <!-- Project Modal -->
     <div id="project-modal" class="modal">
         <div class="modal-content">
-            <button class="modal-close"><span>&times;</span></button>
+            <button class="modal-close" aria-label="Close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
             <div class="modal-scroll-wrapper">
                 <div class="modal-gallery" id="modal-gallery">
                     <!-- Images injected here -->
@@ -145,13 +143,15 @@
     <!-- Video Modal -->
     <div id="video-modal" class="modal">
         <div class="modal-content video-modal-content">
-            <button class="modal-close video-close"><span>&times;</span></button>
+            <button class="modal-close video-close" aria-label="Close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
             <div class="video-container">
                 <iframe id="video-frame" src="" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
             </div>
-            <div style="padding: 20px; text-align: center; color: var(--text-color);">
-                <h3 id="video-title" style="margin-bottom: 5px;">Title</h3>
-                <p id="video-desc" style="font-size: 0.9rem; color: var(--accent-color);">Description</p>
+            <div class="video-details-container">
+                <h3 id="video-title">Title</h3>
+                <p id="video-desc">Description</p>
             </div>
         </div>
     </div>
@@ -159,7 +159,9 @@
     <!-- Contact Modal -->
     <div id="contact-modal" class="modal">
         <div class="modal-content contact-modal-content">
-            <button class="modal-close contact-close"><span>&times;</span></button>
+            <button class="modal-close contact-close" aria-label="Close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
             <div class="contact-form-container">
                 <h2 class="modal-title">Let's Work Together</h2>
                 <br>
@@ -182,34 +184,21 @@
                 </div>
                 <div class="form-group">
                     <label for="contact-desc">Project Details</label>
-                    <textarea id="contact-desc" class="form-input" rows="5"
-                        placeholder="Tell me about your project..."></textarea>
+                    <textarea id="contact-desc" class="form-input" rows="5" placeholder="Tell me about your project..."></textarea>
                 </div>
 
                 <div class="contact-actions">
                     <button id="send-btn" class="modal-link full-width-btn">
                         <span class="btn-content">
                             <span>Send Email</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <line x1="22" y1="2" x2="11" y2="13"></line>
                                 <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                             </svg>
                         </span>
                     </button>
-                    <button id="send-provider-btn" class="modal-link hidden"
-                        style="width: 100%; text-align: center; cursor: pointer; margin-top: 10px; font-size: 0.9rem;">
-                        <span>Send via Gmail</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
-                            </path>
-                            <polyline points="22,6 12,13 2,6"></polyline>
-                        </svg>
-                    </button>
                     <p style="text-align: center; margin-top: 15px; font-size: 0.85rem; color: var(--accent-color);">
-                        Prefer direct email? Write to <a href="mailto:charleskenrickdarma@gmail.com"
-                            style="text-decoration: underline;">charleskenrickdarma@gmail.com</a>
+                        Prefer direct email? Write to <a href="mailto:charleskenrickdarma@gmail.com" style="text-decoration: underline; color: var(--text-color);">charleskenrickdarma@gmail.com</a>
                     </p>
                 </div>
             </div>
@@ -220,5 +209,4 @@
     <script src="data.js"></script>
     <script src="script.js"></script>
 </body>
-
 </html>
