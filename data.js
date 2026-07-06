@@ -1,5 +1,29 @@
 const PROJECTS = [
     {
+        title: "Sepatu Untuk Kita",
+        category: "Theater & Video Production",
+        year: "2026",
+        description: "Head of Production, Prologue Video Editor, and Supporting Cast for this OSIS 'Bela Negara' musical drama.",
+        fullStory: "A musical drama created for the school's OSIS 'Bela Negara' program. In addition to playing a supporting role on stage, I served as the Head of Production, where I coordinated with the livecam team to manage the live feed. I also produced and edited the prologue video that introduced the musical.",
+        image: "assets/placeholder.png",
+        gallery: ["assets/placeholder.png"],
+        link: "https://drive.google.com/file/d/1xXDWY5wuGB_BL7nLNM2BTrXHSXb9cENc/view?usp=sharing",
+        type: "video",
+        embedUrl: "https://drive.google.com/file/d/1xXDWY5wuGB_BL7nLNM2BTrXHSXb9cENc/preview"
+    },
+    {
+        title: "Panti Werdahana Recap",
+        category: "Video Recap",
+        year: "2026",
+        description: "A short recap video documenting a class visit to the Panti Werdahana nursing home.",
+        fullStory: "This video recap documents a class community visit to Panti Werdahana. Over the course of a few hours, we spent time interacting with the residents. The video was edited to capture these moments and summarize the experience for the class.",
+        image: "assets/placeholder.png",
+        gallery: ["assets/placeholder.png"],
+        link: "https://drive.google.com/file/d/1TKT3E9Z4tC-Z_aSpVlxjXypYKYgjQgrS/view?usp=sharing",
+        type: "video",
+        embedUrl: "https://drive.google.com/file/d/1TKT3E9Z4tC-Z_aSpVlxjXypYKYgjQgrS/preview"
+    },
+    {
         title: "Rencana Baru",
         category: "Short Film",
         year: "2026",
@@ -38,7 +62,7 @@ const PROJECTS = [
         category: "Localization & QA",
         year: "ONGOING",
         description: "Indonesian Localizer, QA Tester, and active community member.",
-        fullStory: "\"CatWeb allows you to easily create your own website. Customize it to perfection and share it to the world!\" - humancat222. <br><br>I've been involved for nearly 2 years as an Indonesian Localizer and QA Tester, helping the community grow.",
+        fullStory: \"CatWeb allows you to easily create your own website. Customize it to perfection and share it to the world!\" - humancat222. <br><br>I've been involved for nearly 2 years as an Indonesian Localizer and QA Tester, helping the community grow.",
         image: "assets/catweb.png",
         gallery: ["assets/catweb.png", "assets/catweb_1.png"],
         link: "https://www.roblox.com/games/10416345607/CatWeb"
