@@ -62,7 +62,7 @@ const PROJECTS = [
         category: "Localization & QA",
         year: "ONGOING",
         description: "Indonesian Localizer, QA Tester, and active community member.",
-        fullStory: \"CatWeb allows you to easily create your own website. Customize it to perfection and share it to the world!\" - humancat222. <br><br>I've been involved for nearly 2 years as an Indonesian Localizer and QA Tester, helping the community grow.",
+        fullStory: "\"CatWeb allows you to easily create your own website. Customize it to perfection and share it to the world!\" - humancat222. <br><br>I've been involved for nearly 2 years as an Indonesian Localizer and QA Tester, helping the community grow.",
         image: "assets/catweb.png",
         gallery: ["assets/catweb.png", "assets/catweb_1.png"],
         link: "https://www.roblox.com/games/10416345607/CatWeb"
