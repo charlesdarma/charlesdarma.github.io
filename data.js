@@ -66,15 +66,5 @@ const PROJECTS = [
         image: "assets/catweb.png",
         gallery: ["assets/catweb.png", "assets/catweb_1.png"],
         link: "https://www.roblox.com/games/10416345607/CatWeb"
-    },
-    {
-        title: "Roommates",
-        category: "Game Development",
-        year: "2024",
-        description: "A social room-sharing game built with Luau scripting.",
-        fullStory: "Co-developed with my friend Theodore. A social experience where players can share rooms and interact. Although it didn't take off, it was a valuable learning experience in Luau scripting and game architecture.",
-        image: "assets/roommates.png",
-        gallery: ["assets/roommates.png"],
-        link: "#"
     }
 ];
