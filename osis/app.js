@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     // Fetch the JSON data
-    fetch('../data/data.json') // Adjust path if needed depending on folder structure
+    fetch('../data.json') // Adjust path if needed depending on folder structure
         .then(response => response.json())
         .then(data => {
             renderAnnouncements(data.announcements);
