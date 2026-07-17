@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSIS SMA Athalia</title>
+    <title>OSIS 2026 SMA Athalia</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
+    <header id="header">
         <div class="container nav-container">
-            <h1 class="logo">OSIS <span>SMA Athalia</span></h1>
+            <h1 class="logo">OSIS <span>2026</span></h1>
             <nav>
                 <ul>
                     <li><a href="#home">Home</a></li>
@@ -24,18 +24,21 @@
     <main>
         <!-- Hero Section -->
         <section id="home" class="hero">
+            <div class="hero-overlay"></div>
             <div class="hero-content">
-                <h2>Selamat Datang di Website Resmi OSIS SMA Athalia</h2>
-                <p>Mengeksplorasi kreativitas, membangun karakter, mewujudkan prestasi.</p>
+                <p class="hero-subtitle">SMA Athalia Presents</p>
+                <h2>OSIS 2026</h2>
+                <p class="hero-tagline">Mengeksplorasi kreativitas, membangun karakter, mewujudkan prestasi.</p>
+                <a href="#events" class="btn-hero">Lihat Kegiatan</a>
             </div>
         </section>
 
         <!-- Announcements Section -->
         <section id="announcements" class="section">
             <div class="container">
-                <h2 class="section-title">Pengumuman Terkini</h2>
+                <h2 class="section-title reveal">Pengumuman Terkini</h2>
                 <div id="announcements-grid" class="grid-cards">
-                    <!-- JS will inject announcements here -->
+                    <!-- JS injects announcements here -->
                 </div>
             </div>
         </section>
@@ -43,16 +46,16 @@
         <!-- Events Section -->
         <section id="events" class="section section-alt">
             <div class="container">
-                <h2 class="section-title">Informasi & Dokumentasi Kegiatan</h2>
+                <h2 class="section-title reveal">Informasi & Dokumentasi</h2>
                 
-                <h3 class="subsection-title">Akan Datang</h3>
+                <h3 class="subsection-title reveal">Akan Datang</h3>
                 <div id="upcoming-events" class="grid-cards">
-                    <!-- JS will inject upcoming events here -->
+                    <!-- JS injects upcoming events here -->
                 </div>
 
-                <h3 class="subsection-title">Dokumentasi Kegiatan</h3>
+                <h3 class="subsection-title reveal">Dokumentasi Kegiatan</h3>
                 <div id="past-events" class="grid-cards">
-                    <!-- JS will inject past events here -->
+                    <!-- JS injects past events here -->
                 </div>
             </div>
         </section>
@@ -60,11 +63,12 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 OSIS SMA Athalia. All Rights Reserved.</p>
+            <h3>OSIS 2026 SMA Athalia</h3>
+            <p>&copy; 2026 All Rights Reserved. Built with ❤ by OSIS IT Division.</p>
         </div>
     </footer>
 
-    <!-- Modal for Same Day Edit / Gallery Viewing -->
+    <!-- Modal -->
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
