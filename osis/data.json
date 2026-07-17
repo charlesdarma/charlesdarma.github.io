@@ -1,0 +1,38 @@
+{
+  "announcements": [
+    {
+      "title": "Pekan Seni SMA Athalia 2024",
+      "date": "2024-09-15",
+      "content": "Persiapan untuk Pekan Seni dimulai! Daftarkan kelas kalian mulai 1 September.",
+      "urgent": true
+    },
+    {
+      "title": "Rapat Pleno OSIS",
+      "date": "2024-08-20",
+      "content": "Rapat pleno untuk seluruh pengurus OSIS di Ruang Audio Visual.",
+      "urgent": false
+    }
+  ],
+  "events": [
+    {
+      "title": "Masa Pengenalan Lingkungan Sekolah (MPLS)",
+      "date": "2024-07-15",
+      "status": "past",
+      "description": "Dokumentasi kegiatan MPLS untuk angkatan baru SMA Athalia.",
+      "sameDayEdit": "https://res.cloudinary.com/your-cloud-name/video/upload/v123456/mpls-sde.mp4",
+      "gallery": [
+        "https://res.cloudinary.com/your-cloud-name/image/upload/v123456/mpls1.jpg",
+        "https://res.cloudinary.com/your-cloud-name/image/upload/v123456/mpls2.jpg",
+        "https://res.cloudinary.com/your-cloud-name/image/upload/v123456/mpls3.jpg"
+      ]
+    },
+    {
+      "title": "Pekan Seni 2024",
+      "date": "2024-09-15",
+      "status": "upcoming",
+      "description": "Ajang kreativitas dan bakat siswa-siswi SMA Athalia. Akan ada lomba band, solo sing, dan teater.",
+      "sameDayEdit": null,
+      "gallery": []
+    }
+  ]
+}
